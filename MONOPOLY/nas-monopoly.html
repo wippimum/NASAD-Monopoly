@@ -1,0 +1,3153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Monopoly: NAS Abu Dhabi Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+  :root {
+    --nas-navy: #0E2A47;
+    --nas-navy-deep: #061629;
+    --nas-teal: #2BB6B0;
+    --nas-teal-light: #6FD9D6;
+    --cream: #FBF7EE;
+    --warm-white: #FFFFFF;
+    --soft-grey: #F3F4F6;
+    --accent-gold: #E8B84B;
+    --ink: #0E2A47;
+    --danger: #D14444;
+    --success: #3D9B5C;
+
+    --c1: #8B5E3C;
+    --c2: #6FD9D6;
+    --c3: #E07A9B;
+    --c4: #E8843C;
+    --c5: #D14444;
+    --c6: #3D9B5C;
+    --c7: #0E2A47;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { height: 100%; overflow-x: hidden; }
+  body {
+    font-family: 'Fredoka', sans-serif;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(43, 182, 176, 0.10) 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(14, 42, 71, 0.08) 0%, transparent 45%),
+      linear-gradient(135deg, #FBF7EE 0%, #F3F4F6 100%);
+    min-height: 100vh;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  input { font-family: inherit; }
+
+  /* --- SCREEN MANAGEMENT --- */
+  .screen { display: none; min-height: 100vh; padding: 24px; }
+  .screen.active { display: block; }
+
+  @media (max-width: 600px) {
+    .screen { padding: 14px; }
+  }
+
+  /* --- START SCREEN --- */
+  #screen-start { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  #screen-start.active { display: flex; }
+
+  .start-logo {
+    width: clamp(120px, 22vw, 200px);
+    height: clamp(120px, 22vw, 200px);
+    background: var(--nas-navy);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 16px 48px rgba(14, 42, 71, 0.35);
+    margin-bottom: 24px;
+  }
+  .start-logo svg { width: 80%; height: 80%; }
+
+  .start-title {
+    font-family: 'Bungee', cursive;
+    font-size: clamp(28px, 5vw, 56px);
+    color: var(--nas-navy);
+    letter-spacing: 1px;
+    text-shadow: 4px 4px 0 var(--nas-teal);
+    line-height: 1;
+    margin-bottom: 12px;
+    max-width: 720px;
+  }
+  .start-tagline {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(20px, 2.5vw, 28px);
+    color: var(--nas-navy);
+    opacity: 0.85;
+    margin-bottom: 36px;
+  }
+  .start-buttons { display: flex; flex-direction: column; gap: 14px; width: min(360px, 92vw); }
+
+  .btn {
+    padding: 16px 24px;
+    border: 2px solid var(--nas-navy);
+    border-radius: 14px;
+    font-family: 'Bungee', cursive;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: var(--cream);
+    background: linear-gradient(135deg, var(--nas-teal) 0%, #1d8a85 100%);
+    box-shadow: 0 5px 0 var(--nas-navy);
+    text-shadow: 1px 1px 0 var(--nas-navy-deep);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+  .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--nas-navy); }
+  .btn.navy { background: linear-gradient(135deg, var(--nas-navy) 0%, var(--nas-navy-deep) 100%); }
+  .btn.outline {
+    background: transparent;
+    color: var(--nas-navy);
+    text-shadow: none;
+    box-shadow: 0 5px 0 var(--nas-navy);
+  }
+  .btn.gold {
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #c89531 100%);
+    color: var(--nas-navy);
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+  }
+  .btn.small { padding: 10px 16px; font-size: 12px; box-shadow: 0 3px 0 var(--nas-navy); }
+  .btn.danger { background: linear-gradient(135deg, var(--danger) 0%, #a13434 100%); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .start-link {
+    margin-top: 12px;
+    background: none;
+    border: none;
+    color: var(--nas-navy);
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* --- SETUP SCREENS --- */
+  .setup-shell { max-width: 720px; margin: 0 auto; }
+  .setup-shell h2 {
+    font-family: 'Bungee', cursive;
+    color: var(--nas-navy);
+    font-size: clamp(22px, 3.5vw, 36px);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .setup-shell .sub {
+    text-align: center;
+    color: var(--nas-navy);
+    opacity: 0.7;
+    margin-bottom: 24px;
+    font-size: 15px;
+  }
+  .player-card {
+    background: var(--warm-white);
+    border: 2px solid var(--nas-navy);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 0 var(--nas-navy);
+  }
+  .player-card .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .player-card label {
+    font-weight: 600;
+    color: var(--nas-navy);
+    font-size: 13px;
+    min-width: 90px;
+  }
+  .player-card input[type="text"] {
+    flex: 1;
+    min-width: 160px;
+    padding: 10px 12px;
+    border: 2px solid var(--nas-navy);
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--nas-navy);
+    background: var(--cream);
+  }
+  .token-picker { display: flex; gap: 6px; flex-wrap: wrap; }
+  .token-btn {
+    width: 44px; height: 44px;
+    border: 2px solid var(--nas-navy);
+    border-radius: 10px;
+    background: var(--cream);
+    font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .token-btn.selected {
+    background: var(--nas-teal);
+    box-shadow: 0 0 0 3px var(--accent-gold);
+    transform: scale(1.08);
+  }
+  .token-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+  .player-card .remove-btn {
+    background: none; border: none;
+    color: var(--danger); font-weight: 600;
+    font-size: 12px; text-decoration: underline;
+    margin-left: auto; padding: 4px 8px;
+  }
+  .setup-actions { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+
+  /* Code entry */
+  .code-input {
+    width: 100%;
+    padding: 18px;
+    font-family: 'Bungee', cursive;
+    font-size: 36px;
+    text-align: center;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    border: 3px solid var(--nas-navy);
+    border-radius: 14px;
+    background: var(--cream);
+    color: var(--nas-navy);
+  }
+  .room-code-display {
+    font-family: 'Bungee', cursive;
+    font-size: clamp(36px, 7vw, 64px);
+    letter-spacing: clamp(4px, 1vw, 10px);
+    text-align: center;
+    color: var(--nas-navy);
+    background: var(--cream);
+    border: 3px solid var(--nas-navy);
+    border-radius: 14px;
+    padding: 18px;
+    margin: 16px 0;
+    box-shadow: 0 6px 0 var(--nas-navy);
+  }
+  #qr-container {
+    display: flex; justify-content: center;
+    background: var(--warm-white);
+    border: 3px solid var(--nas-navy);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 16px auto;
+    width: fit-content;
+  }
+  #qr-container canvas { display: block; }
+  .lobby-players { margin: 16px 0; }
+  .lobby-player {
+    background: var(--cream);
+    border: 2px solid var(--nas-navy);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .lobby-player .av {
+    width: 36px; height: 36px;
+    background: var(--nas-teal);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; border: 2px solid var(--nas-navy);
+  }
+  .lobby-player .nm { font-weight: 600; }
+  .lobby-player .tag {
+    margin-left: auto;
+    font-size: 11px; padding: 2px 8px;
+    background: var(--nas-navy); color: var(--cream);
+    border-radius: 8px; font-weight: 600;
+  }
+
+  /* --- GAME SCREEN --- */
+  #screen-game.active { display: flex; flex-direction: column; padding: 12px; gap: 12px; height: 100vh; overflow: hidden; }
+
+  .game-header {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .game-header h1 {
+    font-family: 'Bungee', cursive;
+    font-size: clamp(14px, 1.8vw, 22px);
+    color: var(--nas-navy);
+    letter-spacing: 0.5px;
+  }
+  .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .room-badge {
+    background: var(--nas-navy);
+    color: var(--cream);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 2px solid var(--accent-gold);
+    cursor: pointer;
+  }
+  .room-badge .code { font-family: 'Bungee', cursive; letter-spacing: 1px; }
+
+  .game-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .board-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    min-width: 0;
+  }
+
+  /* BOARD */
+  .board {
+    aspect-ratio: 1;
+    width: min(100%, calc(100vh - 80px));
+    background: var(--cream);
+    border: 6px solid var(--nas-navy);
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: 9% repeat(9, 1fr) 9%;
+    grid-template-rows: 9% repeat(9, 1fr) 9%;
+    box-shadow:
+      0 20px 60px rgba(14, 42, 71, 0.3),
+      inset 0 0 0 3px var(--nas-teal);
+    position: relative;
+  }
+
+  .tile {
+    background: var(--warm-white);
+    border: 1px solid #d8d8d0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    text-align: center;
+    line-height: 1.05;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+    cursor: pointer;
+  }
+  .tile.bottom { flex-direction: column; }
+  .tile.top { flex-direction: column-reverse; }
+  .tile.left { flex-direction: row; }
+  .tile.right { flex-direction: row-reverse; }
+
+  .color-strip {
+    background: var(--c1);
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    padding: 1px;
+  }
+  .tile.bottom .color-strip, .tile.top .color-strip { width: 100%; height: 22%; min-height: 10px; }
+  .tile.left .color-strip, .tile.right .color-strip { height: 100%; width: 22%; min-width: 10px; flex-direction: column; }
+
+  .tile-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 2px;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .tile.left .tile-body, .tile.right .tile-body {
+    writing-mode: vertical-rl;
+    flex-direction: row;
+    padding: 2px 3px;
+  }
+  .tile.left .tile-body { transform: rotate(180deg); }
+
+  .tile .nm {
+    font-weight: 600;
+    font-size: clamp(7px, 0.7vw, 10px);
+    color: var(--nas-navy);
+    padding: 0 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.05;
+  }
+  /* Property tiles have no icon, so the name uses the full body. */
+  .tile .nm.nm-prop {
+    font-size: clamp(8px, 0.78vw, 11px);
+    line-height: 1.12;
+    padding: 4px 2px 0;
+    word-break: break-word;
+    hyphens: auto;
+    text-align: center;
+    align-self: stretch;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tile.left .nm.nm-prop, .tile.right .nm.nm-prop {
+    padding: 2px 4px 2px 0;
+    text-align: center;
+  }
+  .tile .pr {
+    font-size: clamp(7px, 0.65vw, 9px);
+    color: var(--nas-teal);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .tile .ic { font-size: clamp(14px, 1.6vw, 22px); }
+
+  .tile.premium .nm { color: var(--nas-navy); font-weight: 700; }
+
+  /* Corner styling */
+  .corner {
+    background: linear-gradient(135deg, var(--nas-teal) 0%, #1d8a85 100%);
+    border: 2px solid var(--nas-navy);
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    text-align: center;
+    cursor: pointer;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .corner .big-icon {
+    font-size: clamp(18px, 2.4vw, 32px);
+    filter: drop-shadow(2px 2px 0 var(--nas-navy-deep));
+  }
+  .corner .label {
+    font-family: 'Bungee', cursive;
+    font-size: clamp(7px, 0.85vw, 11px);
+    line-height: 1.1;
+    margin-top: 2px;
+    text-shadow: 1px 1px 0 var(--nas-navy-deep);
+  }
+
+  /* Owned property border */
+  .tile.owned-0 { box-shadow: inset 0 0 0 2px #D14444; }
+  .tile.owned-1 { box-shadow: inset 0 0 0 2px #0E2A47; }
+  .tile.owned-2 { box-shadow: inset 0 0 0 2px #3D9B5C; }
+  .tile.owned-3 { box-shadow: inset 0 0 0 2px #E8843C; }
+  .tile.owned-4 { box-shadow: inset 0 0 0 2px #6FD9D6; }
+  .tile.owned-5 { box-shadow: inset 0 0 0 2px #E07A9B; }
+  .tile.highlight { animation: pulse-highlight 0.6s ease; }
+  @keyframes pulse-highlight {
+    0%, 100% { background: var(--warm-white); }
+    50% { background: var(--accent-gold); }
+  }
+
+  /* Houses display — the small green Monopoly houses, with a red hotel upgrade. */
+  .houses {
+    position: absolute;
+    top: 3px; right: 3px;
+    display: flex; gap: 2px;
+    align-items: center;
+    background: rgba(255,255,255,0.92);
+    padding: 2px 3px;
+    border-radius: 5px;
+    border: 1px solid rgba(14,42,71,0.18);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    z-index: 3;
+  }
+  .houses .mini {
+    width: clamp(8px, 1.05vw, 14px);
+    height: clamp(8px, 1.05vw, 14px);
+    display: block;
+  }
+  .houses .mini.hotel {
+    width: clamp(11px, 1.4vw, 18px);
+  }
+  .tile.left .houses, .tile.right .houses { writing-mode: horizontal-tb; }
+  .tile.left .houses { top: auto; bottom: 3px; }
+  .tile.right .houses { top: 3px; right: auto; left: 3px; }
+
+  /* Tokens on board */
+  .tokens-layer {
+    position: absolute;
+    bottom: 2px; left: 2px; right: 2px;
+    display: flex; flex-wrap: wrap; gap: 2px;
+    pointer-events: none;
+    justify-content: center;
+  }
+  .token-pip {
+    width: clamp(12px, 1.4vw, 20px);
+    height: clamp(12px, 1.4vw, 20px);
+    border-radius: 50%;
+    background: var(--cream);
+    border: 2px solid var(--nas-navy);
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(8px, 0.9vw, 12px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.18s ease;
+  }
+  .corner .tokens-layer, .tile.bottom .tokens-layer { bottom: 1px; left: 1px; right: 1px; }
+  .tile.left .tokens-layer, .tile.right .tokens-layer { writing-mode: horizontal-tb; }
+
+  /* CENTER */
+  .center {
+    grid-column: 2 / 11;
+    grid-row: 2 / 11;
+    background:
+      radial-gradient(circle at center, rgba(43, 182, 176, 0.20) 0%, transparent 60%),
+      linear-gradient(135deg, var(--nas-navy) 0%, var(--nas-navy-deep) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--cream);
+    padding: 4%;
+    position: relative;
+    overflow: hidden;
+    min-width: 0; min-height: 0;
+  }
+  .center::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent 0 28px, rgba(43, 182, 176, 0.04) 28px 29px),
+      repeating-linear-gradient(-45deg, transparent 0 28px, rgba(232, 184, 75, 0.025) 28px 29px);
+    pointer-events: none;
+  }
+  .center::after {
+    content: '';
+    position: absolute;
+    top: 6%; right: 6%;
+    width: clamp(40px, 5vw, 80px); height: clamp(40px, 5vw, 80px);
+    border: 2px solid var(--nas-teal);
+    border-radius: 50%;
+    opacity: 0.25;
+  }
+
+  .nas-logo {
+    width: clamp(90px, 18vw, 200px);
+    height: clamp(75px, 15vw, 170px);
+    z-index: 1;
+    position: relative;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  }
+  .nas-logo svg { width: 100%; height: 100%; display: block; }
+
+  .nas-wordmark {
+    z-index: 1;
+    text-align: center;
+    margin-top: 10px;
+    color: var(--cream);
+  }
+  .nas-wordmark .wm-line {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    letter-spacing: clamp(1.5px, 0.35vw, 4px);
+    font-size: clamp(10px, 1.55vw, 19px);
+    line-height: 1.15;
+  }
+  .nas-wordmark .wm-divider {
+    width: 38%;
+    height: 1px;
+    background: var(--nas-teal);
+    margin: 6px auto 5px;
+    opacity: 0.7;
+  }
+  .nas-wordmark .wm-city {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 400;
+    letter-spacing: clamp(2px, 0.5vw, 5px);
+    font-size: clamp(10px, 1.4vw, 16px);
+    color: var(--nas-teal-light);
+  }
+
+  .center-badge {
+    margin-top: 14px;
+    background: var(--nas-teal);
+    color: var(--nas-navy);
+    padding: 8px 20px;
+    border-radius: 6px;
+    z-index: 1;
+    transform: rotate(-2deg);
+    box-shadow: 4px 4px 0 var(--accent-gold);
+    border: 2px solid var(--nas-navy-deep);
+    text-align: center;
+    line-height: 1.1;
+  }
+  .center-badge .badge-main {
+    display: block;
+    font-family: 'Bungee', cursive;
+    font-size: clamp(13px, 1.9vw, 22px);
+    letter-spacing: 2px;
+  }
+  .center-badge .badge-sub {
+    display: block;
+    font-family: 'Caveat', cursive;
+    font-size: clamp(11px, 1.3vw, 16px);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Dice big animation overlay */
+  .center-dice {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 18px;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .center-dice.show { opacity: 1; }
+  .big-die {
+    width: clamp(56px, 8vw, 96px);
+    height: clamp(56px, 8vw, 96px);
+    background: linear-gradient(160deg, #FFFFFF 0%, #F1ECDD 70%, #D4CCB1 100%);
+    border: 4px solid var(--nas-navy);
+    border-radius: 18px;
+    box-shadow: 6px 6px 0 var(--nas-teal), inset 0 -4px 0 rgba(14,42,71,0.1);
+    padding: 9%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .big-die.rolling { animation: shake 0.4s ease infinite; }
+  @keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-12deg) translateY(-4px); }
+    75% { transform: rotate(12deg) translateY(4px); }
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .panel {
+    background: var(--warm-white);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(14, 42, 71, 0.12);
+    border: 2px solid var(--nas-navy);
+  }
+  .panel h3 {
+    font-family: 'Bungee', cursive;
+    color: var(--nas-navy);
+    font-size: 13px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel h3::before {
+    content: '';
+    width: 10px; height: 10px;
+    background: var(--nas-teal);
+    border-radius: 50%;
+  }
+
+  .player-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: var(--cream);
+    border-left: 4px solid var(--nas-navy);
+    position: relative;
+  }
+  .player-row.disconnected { opacity: 0.5; }
+  .player-row.bankrupt { opacity: 0.4; text-decoration: line-through; }
+  .player-row.active {
+    background: linear-gradient(90deg, rgba(43,182,176,0.20) 0%, var(--cream) 100%);
+    box-shadow: 0 0 0 2px var(--nas-teal);
+  }
+  .player-row .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--nas-teal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    border: 2px solid var(--nas-navy);
+    flex-shrink: 0;
+  }
+  .player-row .info { flex: 1; min-width: 0; }
+  .player-row .info .nm { font-weight: 600; font-size: 13px; color: var(--nas-navy); }
+  .player-row .info .meta { font-size: 11px; color: var(--nas-teal); font-weight: 600; }
+
+  .dice-area {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .die {
+    width: 52px; height: 52px;
+    background: linear-gradient(160deg, #FFFFFF 0%, #F1ECDD 70%, #DAD3BC 100%);
+    border: 3px solid var(--nas-navy);
+    border-radius: 12px;
+    box-shadow: 3px 3px 0 var(--nas-teal), inset 0 -3px 0 rgba(14,42,71,0.08);
+    padding: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .die svg, .big-die svg { width: 100%; height: 100%; display: block; }
+  .pip { fill: var(--nas-navy); }
+
+  .turn-info {
+    text-align: center;
+    font-weight: 600;
+    color: var(--nas-navy);
+    margin-bottom: 6px;
+  }
+  .turn-info .who {
+    font-family: 'Bungee', cursive;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+  }
+  .turn-actions { display: flex; flex-direction: column; gap: 8px; }
+
+  .log {
+    font-size: 12px;
+    background: var(--cream);
+    padding: 10px;
+    border-radius: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    line-height: 1.5;
+  }
+  .log p { margin-bottom: 3px; }
+  .log .turn { color: var(--nas-navy); font-weight: 700; }
+  .log .event { color: var(--nas-teal); font-weight: 500; }
+  .log .toddle { color: var(--c5); font-weight: 500; }
+  .log .system { color: var(--accent-gold); font-weight: 600; font-style: italic; }
+
+  .your-turn-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--nas-teal);
+    color: var(--nas-navy);
+    padding: 12px;
+    text-align: center;
+    font-family: 'Bungee', cursive;
+    font-size: 16px;
+    letter-spacing: 1px;
+    border-top: 3px solid var(--nas-navy);
+    z-index: 50;
+    animation: pulse-banner 1.4s ease infinite;
+    display: none;
+  }
+  .your-turn-banner.show { display: block; }
+  @keyframes pulse-banner {
+    0%, 100% { background: var(--nas-teal); }
+    50% { background: var(--accent-gold); }
+  }
+
+  /* --- MODALS --- */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 42, 71, 0.55);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--warm-white);
+    border-radius: 18px;
+    border: 3px solid var(--nas-navy);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    max-width: 460px;
+    width: 100%;
+    overflow: hidden;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-strip { height: 14px; background: var(--nas-navy); }
+  .modal-body { padding: 22px; text-align: center; }
+  .modal-body h2 {
+    font-family: 'Bungee', cursive;
+    color: var(--nas-navy);
+    font-size: 22px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+  .modal-body .price-line {
+    font-family: 'Bungee', cursive;
+    font-size: 28px;
+    color: var(--nas-teal);
+    margin: 10px 0;
+  }
+  .modal-body .desc {
+    font-size: 15px;
+    color: var(--nas-navy);
+    margin-bottom: 14px;
+    line-height: 1.45;
+  }
+  .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .rent-preview {
+    background: var(--cream);
+    border: 1px dashed var(--nas-navy);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    text-align: left;
+    font-size: 13px;
+  }
+  .rent-preview div { display: flex; justify-content: space-between; padding: 2px 0; }
+  .money-effect {
+    font-family: 'Bungee', cursive;
+    font-size: 32px;
+    margin: 14px 0;
+  }
+  .money-effect.positive { color: var(--success); }
+  .money-effect.negative { color: var(--danger); }
+
+  /* --- WIN SCREEN --- */
+  #screen-win.active { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 100vh; }
+  .win-card {
+    background: var(--warm-white);
+    border: 3px solid var(--accent-gold);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 520px;
+    width: 92vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+  }
+  .win-card .crown-icon { font-size: 72px; margin-bottom: 16px; }
+  .win-card h2 {
+    font-family: 'Bungee', cursive;
+    color: var(--nas-navy);
+    font-size: 36px;
+    text-shadow: 3px 3px 0 var(--accent-gold);
+    margin-bottom: 8px;
+  }
+  .win-card .winner-name {
+    font-family: 'Bungee', cursive;
+    font-size: 28px;
+    color: var(--nas-teal);
+    margin: 12px 0;
+  }
+  .win-card .net-worth {
+    font-family: 'Bungee', cursive;
+    font-size: 22px;
+    color: var(--nas-navy);
+    margin-bottom: 18px;
+  }
+  .ranking { text-align: left; margin: 14px 0; }
+  .ranking-row {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 6px 10px;
+    background: var(--cream);
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  /* Confetti */
+  .confetti {
+    position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+  }
+  .confetto {
+    position: absolute;
+    width: 10px; height: 14px;
+    top: -20px;
+    animation: confetti-fall linear infinite;
+  }
+  @keyframes confetti-fall {
+    to { transform: translateY(105vh) rotate(720deg); }
+  }
+
+  /* --- RESPONSIVE: drawer for narrow screens --- */
+  @media (max-width: 900px) {
+    #screen-game.active { padding: 8px; }
+    .game-layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+    }
+    .board-wrap .board { width: min(100vw - 16px, calc(100vh - 320px)); max-width: 600px; }
+    .sidebar {
+      max-height: 280px;
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    .sidebar .panel {
+      min-width: 240px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+  }
+  @media (max-width: 600px) {
+    .game-header h1 { font-size: 13px; }
+    .board { border-width: 4px; }
+    .tile .nm { font-size: 6.5px; }
+    .tile .pr { font-size: 6.5px; }
+    .center-title { font-size: clamp(14px, 5vw, 24px); }
+    .nas-logo { width: 22vw; height: 22vw; }
+    .center-badge { font-size: 9px; padding: 4px 12px; }
+    .sidebar { max-height: 240px; }
+    .sidebar .panel { min-width: 200px; padding: 10px; }
+    .modal-body { padding: 16px; }
+    .modal-body h2 { font-size: 18px; }
+  }
+
+  /* utility */
+  .hidden { display: none !important; }
+  .center-text { text-align: center; }
+  .row-flex { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .spacer { flex: 1; }
+
+  /* small UI bits */
+  .info-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--accent-gold);
+    color: var(--nas-navy);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--nas-navy);
+  }
+
+  .property-list {
+    display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;
+  }
+  .property-chip {
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--warm-white);
+    border: 1px solid var(--nas-navy);
+    cursor: pointer;
+    color: var(--nas-navy);
+    font-weight: 600;
+  }
+
+  .toast {
+    position: fixed;
+    top: 16px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--nas-navy);
+    color: var(--cream);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    z-index: 200;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================= -->
+<!-- START SCREEN                                                  -->
+<!-- ============================================================= -->
+<div id="screen-start" class="screen active">
+  <div class="start-logo" id="start-logo-mount"></div>
+  <h1 class="start-title">Monopoly: NAS Abu Dhabi Edition</h1>
+  <p class="start-tagline">Designed by Alya, Leyna, Sultan and Hamdan AL FALASI</p>
+  <div class="start-buttons">
+    <button class="btn" id="btn-pap">▶ PLAY ON THIS DEVICE</button>
+    <button class="btn navy" id="btn-host">🌐 HOST MULTIPLAYER</button>
+    <button class="btn outline" id="btn-join">🔗 JOIN A GAME</button>
+    <button class="btn gold hidden" id="btn-continue">⏵ CONTINUE GAME</button>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PASS-AND-PLAY SETUP                                           -->
+<!-- ============================================================= -->
+<div id="screen-pap-setup" class="screen">
+  <div class="setup-shell">
+    <h2>Play on this device</h2>
+    <p class="sub">Add 2 to 6 players. Pick a name and a token for each.</p>
+    <div id="pap-players"></div>
+    <div class="setup-actions">
+      <button class="btn small outline" id="btn-add-player">+ ADD PLAYER</button>
+      <button class="btn small danger" id="btn-remove-player">– REMOVE</button>
+    </div>
+    <div class="setup-actions" style="margin-top:18px;">
+      <button class="btn outline small" id="btn-pap-back">← BACK</button>
+      <button class="btn" id="btn-pap-start">START GAME →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- HOST SETUP                                                    -->
+<!-- ============================================================= -->
+<div id="screen-host" class="screen">
+  <div class="setup-shell">
+    <h2>Host a Game</h2>
+    <p class="sub">Share the code or QR. Others join from their own device.</p>
+    <div id="host-status" class="info-pill" style="display:block;text-align:center;margin:0 auto 12px;width:fit-content;">Connecting...</div>
+    <div class="room-code-display" id="room-code">------</div>
+    <div id="qr-container" class="hidden"></div>
+    <div class="player-card">
+      <p style="font-weight:600;color:var(--nas-navy);margin-bottom:8px;">Your player</p>
+      <div class="row">
+        <label>Name</label>
+        <input type="text" id="host-name" placeholder="Your name" value="Host" maxlength="14">
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <label>Token</label>
+        <div class="token-picker" id="host-token-picker"></div>
+      </div>
+    </div>
+    <p style="font-weight:600;color:var(--nas-navy);margin:14px 0 8px;">Players in lobby</p>
+    <div class="lobby-players" id="lobby-list"></div>
+    <div class="setup-actions">
+      <button class="btn outline small" id="btn-host-back">← BACK</button>
+      <button class="btn" id="btn-host-start" disabled>START GAME →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- JOIN SETUP                                                    -->
+<!-- ============================================================= -->
+<div id="screen-join" class="screen">
+  <div class="setup-shell">
+    <h2>Join a Game</h2>
+    <p class="sub">Enter the 6-letter code from the host.</p>
+    <input type="text" id="join-code-input" class="code-input" placeholder="OASIS5" maxlength="6">
+    <div id="join-name-area" class="hidden">
+      <div class="player-card" style="margin-top:14px;">
+        <p style="font-weight:600;color:var(--nas-navy);margin-bottom:8px;">Your player</p>
+        <div class="row">
+          <label>Name</label>
+          <input type="text" id="join-name" placeholder="Your name" value="Player" maxlength="14">
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <label>Token</label>
+          <div class="token-picker" id="join-token-picker"></div>
+        </div>
+      </div>
+      <div id="join-status" style="text-align:center;margin:12px 0;color:var(--nas-navy);font-weight:600;"></div>
+    </div>
+    <div class="setup-actions" style="margin-top:18px;">
+      <button class="btn outline small" id="btn-join-back">← BACK</button>
+      <button class="btn" id="btn-join-confirm">CONNECT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- GAME SCREEN                                                   -->
+<!-- ============================================================= -->
+<div id="screen-game" class="screen">
+  <div class="game-header">
+    <h1>🎲 Monopoly · NAS Abu Dhabi</h1>
+    <div class="header-right">
+      <div class="room-badge hidden" id="room-badge">Room <span class="code" id="room-badge-code"></span></div>
+      <button class="btn small outline" id="btn-end-game">END GAME</button>
+      <button class="btn small danger" id="btn-quit">✕ QUIT</button>
+    </div>
+  </div>
+  <div class="game-layout">
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+    </div>
+    <div class="sidebar">
+      <div class="panel">
+        <h3>Players</h3>
+        <div id="players-list"></div>
+      </div>
+      <div class="panel">
+        <h3 id="turn-heading">Turn</h3>
+        <div class="turn-info">
+          <div class="who" id="turn-who"></div>
+          <div id="turn-status" style="font-size:12px;opacity:0.7;"></div>
+        </div>
+        <div class="dice-area">
+          <div class="die" id="die-1"></div>
+          <div class="die" id="die-2"></div>
+        </div>
+        <div class="turn-actions" id="turn-actions"></div>
+      </div>
+      <div class="panel">
+        <h3>Game Log</h3>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- WIN SCREEN                                                    -->
+<!-- ============================================================= -->
+<div id="screen-win" class="screen">
+  <div class="confetti" id="confetti"></div>
+  <div class="win-card">
+    <div class="crown-icon">👑</div>
+    <h2>WINNER!</h2>
+    <div class="winner-name" id="win-name">—</div>
+    <div class="net-worth" id="win-worth">0 ⭐</div>
+    <div class="ranking" id="win-ranking"></div>
+    <div class="setup-actions">
+      <button class="btn outline" id="btn-win-new">NEW GAME</button>
+      <button class="btn" id="btn-win-home">← HOME</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- MODALS                                                        -->
+<!-- ============================================================= -->
+<div class="modal-backdrop" id="modal-property">
+  <div class="modal">
+    <div class="modal-strip" id="prop-strip"></div>
+    <div class="modal-body">
+      <h2 id="prop-name">—</h2>
+      <p class="desc" id="prop-desc">—</p>
+      <div class="price-line" id="prop-price">0 ⭐</div>
+      <div class="rent-preview" id="prop-rent"></div>
+      <div class="modal-actions">
+        <button class="btn outline small" id="prop-skip">SKIP</button>
+        <button class="btn small" id="prop-buy">BUY</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-card">
+  <div class="modal">
+    <div class="modal-strip" id="card-strip" style="background:var(--accent-gold);"></div>
+    <div class="modal-body">
+      <h2 id="card-title">🎁 Chance</h2>
+      <p class="desc" id="card-text">—</p>
+      <div class="money-effect" id="card-effect"></div>
+      <div class="modal-actions">
+        <button class="btn" id="card-ok">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-info">
+  <div class="modal">
+    <div class="modal-strip"></div>
+    <div class="modal-body">
+      <h2 id="info-title">—</h2>
+      <p class="desc" id="info-text">—</p>
+      <div class="modal-actions">
+        <button class="btn small" id="info-ok">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-property-detail">
+  <div class="modal">
+    <div class="modal-strip" id="pd-strip"></div>
+    <div class="modal-body">
+      <h2 id="pd-name">—</h2>
+      <p class="desc" id="pd-desc">—</p>
+      <div class="rent-preview" id="pd-rent"></div>
+      <div id="pd-build-area"></div>
+      <div class="modal-actions">
+        <button class="btn outline small" id="pd-close">CLOSE</button>
+        <button class="btn small hidden" id="pd-build">BUILD HOUSE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="your-turn-banner" id="your-turn-banner">YOUR TURN!</div>
+
+<!-- ============================================================= -->
+<!-- SCRIPT                                                        -->
+<!-- ============================================================= -->
+<script>
+'use strict';
+
+/* ============================================================ */
+/* GAME CONSTANTS                                               */
+/* ============================================================ */
+
+const ZONES = {
+  'early-years':  { color: '#8B5E3C', tiles: [1, 3],                houseCost: 50  },
+  'primary-life': { color: '#6FD9D6', tiles: [6, 8, 9],             houseCost: 50  },
+  'libraries':    { color: '#E07A9B', tiles: [11, 13, 14, 15, 16],  houseCost: 100 },
+  'play-zones':   { color: '#E8843C', tiles: [18, 19, 21],          houseCost: 100 },
+  'food-court':   { color: '#D14444', tiles: [23, 24, 26],          houseCost: 100 },
+  'sports':       { color: '#3D9B5C', tiles: [27, 29, 31, 32, 34, 35], houseCost: 150 },
+  'arts-science': { color: '#0E2A47', tiles: [37, 38, 39],          houseCost: 150 }
+};
+
+const TILE_DATA = [
+  { i: 0,  type: 'corner-go',       name: 'GO',                emoji: '🏫' },
+  { i: 1,  type: 'property',        name: 'EY Playground',     zone: 'early-years',  price: 60,  houseCost: 50  },
+  { i: 2,  type: 'chance',          name: 'Chance',            emoji: '🎁' },
+  { i: 3,  type: 'property',        name: 'EY Pool',           zone: 'early-years',  price: 60,  houseCost: 50  },
+  { i: 4,  type: 'tax',             name: 'School Fees',       emoji: '💰', tax: 200 },
+  { i: 5,  type: 'station',         name: 'Gate 1',            emoji: '🚪', price: 200 },
+  { i: 6,  type: 'property',        name: 'The Oasis',         zone: 'primary-life', price: 100, houseCost: 50  },
+  { i: 7,  type: 'toddle',          name: 'Toddle Card',       emoji: '📱' },
+  { i: 8,  type: 'property',        name: 'Primary Playground',zone: 'primary-life', price: 100, houseCost: 50  },
+  { i: 9,  type: 'property',        name: 'Primary Pool',      zone: 'primary-life', price: 120, houseCost: 50  },
+  { i: 10, type: 'corner-jail',     name: "Principal's Office",emoji: '🎓' },
+  { i: 11, type: 'property',        name: 'Primary Library',   zone: 'libraries',    price: 140, houseCost: 100 },
+  { i: 12, type: 'utility',         name: 'Reception',         emoji: '🏢', price: 150 },
+  { i: 13, type: 'property',        name: 'Secondary Library', zone: 'libraries',    price: 140, houseCost: 100 },
+  { i: 14, type: 'property',        name: 'ICT Room',          zone: 'libraries',    price: 160, houseCost: 100 },
+  { i: 15, type: 'property',        name: 'Praying Room',      zone: 'libraries',    price: 160, houseCost: 100 },
+  { i: 16, type: 'property',        name: 'Chess Room',        zone: 'libraries',    price: 180, houseCost: 100 },
+  { i: 17, type: 'station',         name: 'Gate 2',            emoji: '🚪', price: 200 },
+  { i: 18, type: 'property',        name: 'Tree House',        zone: 'play-zones',   price: 180, houseCost: 100 },
+  { i: 19, type: 'property',        name: 'Pirate Ship',       zone: 'play-zones',   price: 200, houseCost: 100 },
+  { i: 20, type: 'corner-free',     name: 'Break Time',        emoji: '🎪' },
+  { i: 21, type: 'property',        name: 'Basketball Court',  zone: 'play-zones',   price: 220, houseCost: 100 },
+  { i: 22, type: 'toddle',          name: 'Toddle Card',       emoji: '📱' },
+  { i: 23, type: 'property',        name: 'NAS Café',          zone: 'food-court',   price: 220, houseCost: 100 },
+  { i: 24, type: 'property',        name: 'Primary Canteen',   zone: 'food-court',   price: 220, houseCost: 100 },
+  { i: 25, type: 'station',         name: 'Gate 3',            emoji: '🚪', price: 200 },
+  { i: 26, type: 'property',        name: 'Secondary Canteen', zone: 'food-court',   price: 240, houseCost: 100 },
+  { i: 27, type: 'property',        name: 'School Gym',        zone: 'sports',       price: 260, houseCost: 150 },
+  { i: 28, type: 'chance',          name: 'Chance',            emoji: '🎁' },
+  { i: 29, type: 'property',        name: 'Sports Hall',       zone: 'sports',       price: 260, houseCost: 150 },
+  { i: 30, type: 'corner-gotojail', name: 'Go to Principal',   emoji: '⚠️' },
+  { i: 31, type: 'property',        name: 'Football Pitch',    zone: 'sports',       price: 280, houseCost: 150 },
+  { i: 32, type: 'property',        name: 'Ping Pong Room',    zone: 'sports',       price: 280, houseCost: 150 },
+  { i: 33, type: 'utility',         name: 'Water Station',     emoji: '💧', price: 150 },
+  { i: 34, type: 'property',        name: 'Running Track',     zone: 'sports',       price: 300, houseCost: 150 },
+  { i: 35, type: 'property',        name: 'Olympic Pool',      zone: 'sports',       price: 320, houseCost: 150 },
+  { i: 36, type: 'station',         name: 'Gate 4',            emoji: '🚪', price: 200 },
+  { i: 37, type: 'property',        name: 'Music Room',        zone: 'arts-science', price: 350, houseCost: 150 },
+  { i: 38, type: 'property',        name: 'Science Lab',       zone: 'arts-science', price: 350, houseCost: 150 },
+  { i: 39, type: 'property',        name: 'Dance Studio',      zone: 'arts-science', price: 380, houseCost: 150 },
+];
+
+const CHANCE_CARDS = [
+  { id: 'C1',  text: "It's UAE National Day! Wear red, white, green & black. Collect 100 ⭐",  effect: { type: 'collect', amount: 100 } },
+  { id: 'C2',  text: "Pinktober walk — you raised money for charity. Collect 75 ⭐",           effect: { type: 'collect', amount: 75 } },
+  { id: 'C3',  text: "You won Star of the Week! Collect 50 ⭐",                                 effect: { type: 'collect', amount: 50 } },
+  { id: 'C4',  text: "World Book Day — best costume! Collect 60 ⭐",                            effect: { type: 'collect', amount: 60 } },
+  { id: 'C5',  text: "House Points winner this week. Collect 80 ⭐",                            effect: { type: 'collect', amount: 80 } },
+  { id: 'C6',  text: "Sports Day — your house came first! Collect 100 ⭐",                      effect: { type: 'collect', amount: 100 } },
+  { id: 'C7',  text: "Spelling Bee champion! Collect 75 ⭐",                                    effect: { type: 'collect', amount: 75 } },
+  { id: 'C8',  text: "Art exhibition — your work was chosen. Collect 60 ⭐",                    effect: { type: 'collect', amount: 60 } },
+  { id: 'C9',  text: "Eid celebration — Eidiya from everyone! Each player pays you 25 ⭐",     effect: { type: 'collect-from-each', amount: 25 } },
+  { id: 'C10', text: "Elected to School Council. Collect 50 ⭐",                                effect: { type: 'collect', amount: 50 } },
+  { id: 'C11', text: "Math Olympiad medal! Collect 80 ⭐",                                      effect: { type: 'collect', amount: 80 } },
+  { id: 'C12', text: "Charity bake sale was a hit. Collect 40 ⭐",                              effect: { type: 'collect', amount: 40 } },
+  { id: 'C13', text: "Read 50 library books — Librarian's Award! Collect 60 ⭐",                effect: { type: 'collect', amount: 60 } },
+  { id: 'C14', text: "Coding Club built something cool. Collect 75 ⭐",                         effect: { type: 'collect', amount: 75 } },
+  { id: 'C15', text: "Birthday cards from your whole class. Collect 50 ⭐",                     effect: { type: 'collect', amount: 50 } },
+  { id: 'C16', text: "Move directly to GO. Collect 200 ⭐",                                     effect: { type: 'move-to', tileIndex: 0 } }
+];
+
+const TODDLE_CARDS = [
+  { id: 'T1',  text: "Forgot your reading book at home. Pay 30 ⭐",                       effect: { type: 'pay', amount: 30 } },
+  { id: 'T2',  text: "Maths homework submitted late on Toddle. Pay 50 ⭐",                effect: { type: 'pay', amount: 50 } },
+  { id: 'T3',  text: "Forgot your PE kit — borrow from lost & found. Pay 40 ⭐",         effect: { type: 'pay', amount: 40 } },
+  { id: 'T4',  text: "Didn't return your library book. Pay 25 ⭐",                        effect: { type: 'pay', amount: 25 } },
+  { id: 'T5',  text: "Lost your water bottle for the third time. Pay 35 ⭐",             effect: { type: 'pay', amount: 35 } },
+  { id: 'T6',  text: "Missed the Toddle reminder about cake sale. Pay 30 ⭐",            effect: { type: 'pay', amount: 30 } },
+  { id: 'T7',  text: "Spent too long at NAS Café — late to class. Pay 40 ⭐",            effect: { type: 'pay', amount: 40 } },
+  { id: 'T8',  text: "Forgot to bring permission slip for school trip. Pay 60 ⭐",       effect: { type: 'pay', amount: 60 } },
+  { id: 'T9',  text: "Lost your school bus pass. Pay 50 ⭐",                              effect: { type: 'pay', amount: 50 } },
+  { id: 'T10', text: "Forgot show-and-tell item. Pay 25 ⭐",                              effect: { type: 'pay', amount: 25 } },
+  { id: 'T11', text: "Got an after-school detention. Go to Principal's Office.",         effect: { type: 'go-to-jail' } },
+  { id: 'T12', text: "Lost your blazer. Pay 100 ⭐ for a new one",                        effect: { type: 'pay', amount: 100 } },
+  { id: 'T13', text: "Phone confiscated in class. Pay 50 ⭐ to get it back",              effect: { type: 'pay', amount: 50 } },
+  { id: 'T14', text: "Late to assembly. Pay 30 ⭐",                                       effect: { type: 'pay', amount: 30 } },
+  { id: 'T15', text: "Charged extra at the canteen for going off-menu. Pay 25 ⭐",       effect: { type: 'pay', amount: 25 } },
+  { id: 'T16', text: "Move back 3 tiles.",                                               effect: { type: 'move-back', tiles: 3 } }
+];
+
+const ALL_TOKENS = ['🚌', '⚽', '📚', '🦅', '🐪', '🎨'];
+const STARTING_MONEY = 1500;
+const PASS_GO_BONUS = 200;
+const JAIL_FINE = 50;
+const MOVE_ANIM_MS = 150;
+
+const STATION_RENTS = { 1: 25, 2: 50, 3: 100, 4: 200 };
+
+/* NAS logo — white crown + open book. Transparent background, white silhouette only. */
+const CROWN_SVG = `
+<svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" aria-label="NAS crown">
+  <g fill="#FFFFFF">
+    <!-- Central flame / finial -->
+    <path d="M120 22
+             C115 36, 111 50, 114 62
+             C116 70, 124 70, 126 62
+             C129 50, 125 36, 120 22 Z"/>
+
+    <!-- Left curl: swan-neck arc that loops back inward -->
+    <path d="M118 78
+             C112 70, 104 58, 92 48
+             C80 38, 64 32, 52 38
+             C40 44, 38 60, 48 70
+             C56 78, 70 80, 80 74
+             C70 80, 60 78, 56 70
+             C52 62, 58 54, 68 54
+             C82 54, 96 64, 108 78
+             Z"/>
+
+    <!-- Right curl: mirror -->
+    <path d="M122 78
+             C128 70, 136 58, 148 48
+             C160 38, 176 32, 188 38
+             C200 44, 202 60, 192 70
+             C184 78, 170 80, 160 74
+             C170 80, 180 78, 184 70
+             C188 62, 182 54, 172 54
+             C158 54, 144 64, 132 78
+             Z"/>
+
+    <!-- Crown base / rim -->
+    <path d="M50 82
+             Q120 78, 190 82
+             L188 92
+             Q120 88, 52 92
+             Z"/>
+
+    <!-- Open book — pages curling outward at edges -->
+    <path d="M40 102
+             Q60 98, 90 106
+             Q110 112, 120 118
+             Q130 112, 150 106
+             Q180 98, 200 102
+             L200 108
+             Q180 104, 150 112
+             Q130 118, 120 124
+             Q110 118, 90 112
+             Q60 104, 40 108 Z"/>
+
+    <path d="M40 114
+             Q60 110, 90 118
+             Q110 124, 120 130
+             Q130 124, 150 118
+             Q180 110, 200 114
+             L200 148
+             Q180 144, 150 152
+             Q130 158, 120 162
+             Q110 158, 90 152
+             Q60 144, 40 148 Z"/>
+  </g>
+</svg>
+`;
+
+/* ============================================================ */
+/* GAME STATE                                                    */
+/* ============================================================ */
+
+let gameState = null;
+let net = { peer: null, conns: {}, role: null, hostId: null, myId: null };
+let lockInputUntilAck = false;
+let pendingLanding = false;
+
+function freshGameState(mode){
+  return {
+    status: 'lobby',
+    mode: mode,
+    roomCode: null,
+    players: [],
+    currentPlayerIndex: 0,
+    diceRoll: { d1: 0, d2: 0 },
+    hasRolled: false,
+    isMoving: false,
+    properties: {},
+    chanceDeck: shuffleDeck(CHANCE_CARDS.map(c => c.id)),
+    toddleDeck: shuffleDeck(TODDLE_CARDS.map(c => c.id)),
+    log: []
+  };
+}
+
+function shuffleDeck(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ============================================================ */
+/* HELPERS                                                       */
+/* ============================================================ */
+
+const $ = (id) => document.getElementById(id);
+const fmtMoney = (n) => `${n.toLocaleString()} ⭐`;
+const currentPlayer = () => gameState && gameState.players[gameState.currentPlayerIndex];
+
+function findCard(id){
+  return CHANCE_CARDS.find(c=>c.id===id) || TODDLE_CARDS.find(c=>c.id===id);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+function showToast(text){
+  const t = $('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function logEvent(text, klass='event'){
+  if (!gameState) return;
+  gameState.log.unshift({ text, klass, ts: Date.now() });
+  if (gameState.log.length > 80) gameState.log.length = 80;
+  renderLog();
+}
+
+function tileGridPosition(idx){
+  /* Returns { col, row } in 1-based 11x11 grid. */
+  if (idx === 0)  return { col: 11, row: 11 };
+  if (idx === 10) return { col: 1,  row: 11 };
+  if (idx === 20) return { col: 1,  row: 1 };
+  if (idx === 30) return { col: 11, row: 1 };
+  if (idx >= 1 && idx <= 9)   return { col: 11 - idx, row: 11 };
+  if (idx >= 11 && idx <= 19) return { col: 1, row: 21 - idx };
+  if (idx >= 21 && idx <= 29) return { col: idx - 19, row: 1 };
+  if (idx >= 31 && idx <= 39) return { col: 11, row: idx - 29 };
+  return { col: 1, row: 1 };
+}
+
+function tileSide(idx){
+  if (idx >= 1 && idx <= 9)   return 'bottom';
+  if (idx >= 11 && idx <= 19) return 'left';
+  if (idx >= 21 && idx <= 29) return 'top';
+  if (idx >= 31 && idx <= 39) return 'right';
+  return null;
+}
+
+function ownerColor(playerIndex){
+  const palette = ['#D14444','#0E2A47','#3D9B5C','#E8843C','#6FD9D6','#E07A9B'];
+  return palette[playerIndex % palette.length];
+}
+
+function getMonopolyOwner(zone){
+  const tiles = ZONES[zone].tiles;
+  let owner = null;
+  for (const t of tiles) {
+    const p = gameState.properties[t];
+    if (!p || p.ownerId === null) return null;
+    if (owner === null) owner = p.ownerId;
+    else if (owner !== p.ownerId) return null;
+  }
+  return owner;
+}
+
+function playerStationCount(playerId){
+  return [5,17,25,36].filter(i => gameState.properties[i] && gameState.properties[i].ownerId === playerId).length;
+}
+function playerUtilityCount(playerId){
+  return [12,33].filter(i => gameState.properties[i] && gameState.properties[i].ownerId === playerId).length;
+}
+
+function calcRent(tileIdx, diceTotal){
+  const t = TILE_DATA[tileIdx];
+  const p = gameState.properties[tileIdx];
+  if (!p || p.ownerId === null) return 0;
+  if (t.type === 'station') {
+    const count = playerStationCount(p.ownerId);
+    return STATION_RENTS[count] || 0;
+  }
+  if (t.type === 'utility') {
+    const count = playerUtilityCount(p.ownerId);
+    return diceTotal * (count === 2 ? 10 : 4);
+  }
+  if (t.type === 'property') {
+    if (p.hasHotel) return Math.floor(t.price * 3.00);
+    if (p.houses === 4) return Math.floor(t.price * 2.00);
+    if (p.houses === 3) return Math.floor(t.price * 1.50);
+    if (p.houses === 2) return Math.floor(t.price * 1.00);
+    if (p.houses === 1) return Math.floor(t.price * 0.50);
+    const monopoly = getMonopolyOwner(t.zone) === p.ownerId;
+    return Math.floor(t.price * (monopoly ? 0.20 : 0.10));
+  }
+  return 0;
+}
+
+function rentTable(tileIdx){
+  const t = TILE_DATA[tileIdx];
+  if (t.type === 'property'){
+    return [
+      ['Base', Math.floor(t.price * 0.10)],
+      ['Monopoly', Math.floor(t.price * 0.20)],
+      ['1 house', Math.floor(t.price * 0.50)],
+      ['2 houses', Math.floor(t.price * 1.00)],
+      ['3 houses', Math.floor(t.price * 1.50)],
+      ['4 houses', Math.floor(t.price * 2.00)],
+      ['Hotel', Math.floor(t.price * 3.00)]
+    ];
+  }
+  if (t.type === 'station'){
+    return [
+      ['1 gate', 25], ['2 gates', 50], ['3 gates', 100], ['4 gates', 200]
+    ];
+  }
+  if (t.type === 'utility'){
+    return [['1 utility', 'dice × 4'], ['Both', 'dice × 10']];
+  }
+  return [];
+}
+
+function netWorth(player){
+  let total = player.money;
+  for (const idx of player.properties) {
+    const t = TILE_DATA[idx];
+    const p = gameState.properties[idx];
+    total += t.price || 0;
+    if (p) {
+      total += (p.houses || 0) * (t.houseCost || 0);
+      if (p.hasHotel) total += (t.houseCost || 0) * 5;
+    }
+  }
+  return total;
+}
+
+/* ============================================================ */
+/* BOARD RENDERING                                              */
+/* ============================================================ */
+
+function renderBoard(){
+  const board = $('board');
+  board.innerHTML = '';
+
+  /* Center — mirrors the official Nord Anglia mark. */
+  const center = document.createElement('div');
+  center.className = 'center';
+  center.innerHTML = `
+    <div class="nas-logo">${CROWN_SVG}</div>
+    <div class="nas-wordmark">
+      <div class="wm-line">NORD ANGLIA</div>
+      <div class="wm-line">INTERNATIONAL SCHOOL</div>
+      <div class="wm-divider"></div>
+      <div class="wm-city">ABU DHABI</div>
+    </div>
+    <div class="center-badge">
+      <span class="badge-main">MONOPOLY</span>
+      <span class="badge-sub">NAS Abu Dhabi Edition</span>
+    </div>
+    <div class="center-dice" id="center-dice">
+      <div class="big-die" id="big-die-1"></div>
+      <div class="big-die" id="big-die-2"></div>
+    </div>
+  `;
+  board.appendChild(center);
+
+  /* Tiles */
+  for (const tile of TILE_DATA) {
+    const el = document.createElement('div');
+    const pos = tileGridPosition(tile.i);
+    el.style.gridColumn = pos.col;
+    el.style.gridRow = pos.row;
+    el.dataset.tileIndex = tile.i;
+    el.addEventListener('click', () => onTileClick(tile.i));
+
+    if (tile.type.startsWith('corner')) {
+      el.className = 'corner';
+      const labelMap = {
+        'corner-go': `GO!<br>Collect ${PASS_GO_BONUS}`,
+        'corner-jail': "Principal's<br>Office",
+        'corner-free': 'Break<br>Time',
+        'corner-gotojail': 'Go to<br>Principal'
+      };
+      el.innerHTML = `
+        <div class="big-icon">${tile.emoji}</div>
+        <div class="label">${labelMap[tile.type]}</div>
+        <div class="tokens-layer" data-tokens-for="${tile.i}"></div>
+      `;
+    } else {
+      const side = tileSide(tile.i);
+      el.className = `tile ${side}`;
+      if (tile.zone === 'arts-science') el.classList.add('premium');
+
+      let stripHTML = '';
+      if (tile.type === 'property') {
+        const color = ZONES[tile.zone].color;
+        stripHTML = `<div class="color-strip" style="background:${color};"></div>`;
+      }
+
+      let bodyHTML = '';
+      if (tile.type === 'property') {
+        bodyHTML = `
+          <div class="nm nm-prop">${escapeHTML(tile.name)}</div>
+          <div class="pr">${tile.price} ⭐</div>
+        `;
+      } else if (tile.type === 'station') {
+        bodyHTML = `
+          <div class="ic">${tile.emoji}</div>
+          <div class="nm">${escapeHTML(tile.name)}</div>
+          <div class="pr">${tile.price} ⭐</div>
+        `;
+      } else if (tile.type === 'utility') {
+        bodyHTML = `
+          <div class="ic">${tile.emoji}</div>
+          <div class="nm">${escapeHTML(tile.name)}</div>
+          <div class="pr">${tile.price} ⭐</div>
+        `;
+      } else if (tile.type === 'tax') {
+        bodyHTML = `
+          <div class="ic">${tile.emoji}</div>
+          <div class="nm">${escapeHTML(tile.name)}</div>
+          <div class="pr">Pay ${tile.tax}</div>
+        `;
+      } else if (tile.type === 'chance' || tile.type === 'toddle') {
+        bodyHTML = `
+          <div class="ic">${tile.emoji}</div>
+          <div class="nm">${escapeHTML(tile.name)}</div>
+        `;
+      }
+
+      el.innerHTML = stripHTML + `<div class="tile-body">${bodyHTML}</div>` + `<div class="tokens-layer" data-tokens-for="${tile.i}"></div><div class="houses" data-houses-for="${tile.i}" style="display:none;"></div>`;
+    }
+    board.appendChild(el);
+  }
+}
+
+function zoneEmoji(zone){
+  return {
+    'early-years': '🧸',
+    'primary-life': '🌴',
+    'libraries': '📚',
+    'play-zones': '🛝',
+    'food-court': '🍽️',
+    'sports': '🏆',
+    'arts-science': '🎭'
+  }[zone] || '';
+}
+
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* Real dice face — SVG pip pattern for 0 (blank) through 6. */
+function dieFaceSVG(value){
+  const patterns = {
+    0: [],
+    1: [[50,50]],
+    2: [[28,28],[72,72]],
+    3: [[26,26],[50,50],[74,74]],
+    4: [[28,28],[72,28],[28,72],[72,72]],
+    5: [[26,26],[74,26],[50,50],[26,74],[74,74]],
+    6: [[28,24],[72,24],[28,50],[72,50],[28,76],[72,76]]
+  };
+  const pips = patterns[value] || [];
+  const dots = pips.map(p => `<circle class="pip" cx="${p[0]}" cy="${p[1]}" r="9"/>`).join('');
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${dots}</svg>`;
+}
+
+function setDieFace(el, value){
+  if (!el) return;
+  el.innerHTML = dieFaceSVG(value || 0);
+}
+
+/* House and hotel SVG markers — Monopoly-style. */
+function houseSVG(fill){
+  return `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 14 L2 7 L8 2 L14 7 L14 14 Z" fill="${fill}" stroke="#0E2A47" stroke-width="0.9" stroke-linejoin="round"/>
+    <rect x="6.2" y="9.5" width="3.6" height="4.5" fill="#0E2A47"/>
+  </svg>`;
+}
+function hotelSVG(){
+  return `<svg viewBox="0 0 22 16" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="2,7 11,2 20,7" fill="#D14444" stroke="#0E2A47" stroke-width="0.9" stroke-linejoin="round"/>
+    <rect x="2" y="7" width="18" height="7" fill="#D14444" stroke="#0E2A47" stroke-width="0.9"/>
+    <rect x="4" y="9" width="3" height="4" fill="#FBF7EE"/>
+    <rect x="9.5" y="9" width="3" height="4" fill="#FBF7EE"/>
+    <rect x="15" y="9" width="3" height="4" fill="#FBF7EE"/>
+  </svg>`;
+}
+
+function renderTokensOnBoard(){
+  document.querySelectorAll('[data-tokens-for]').forEach(layer => {
+    layer.innerHTML = '';
+  });
+  if (!gameState) return;
+  gameState.players.forEach((p, idx) => {
+    if (p.isBankrupt) return;
+    const layer = document.querySelector(`[data-tokens-for="${p.tileIndex}"]`);
+    if (!layer) return;
+    const pip = document.createElement('div');
+    pip.className = 'token-pip';
+    pip.textContent = p.token;
+    pip.title = p.name;
+    pip.style.borderColor = ownerColor(idx);
+    layer.appendChild(pip);
+  });
+}
+
+function renderOwnership(){
+  if (!gameState) return;
+  document.querySelectorAll('[data-tile-index]').forEach(el => {
+    el.classList.remove('owned-0','owned-1','owned-2','owned-3','owned-4','owned-5');
+  });
+  Object.keys(gameState.properties).forEach(idx => {
+    const p = gameState.properties[idx];
+    if (p.ownerId === null) return;
+    const ownerIdx = gameState.players.findIndex(x => x.id === p.ownerId);
+    if (ownerIdx < 0) return;
+    const el = document.querySelector(`[data-tile-index="${idx}"]`);
+    if (el) el.classList.add(`owned-${ownerIdx % 6}`);
+  });
+  /* Ownership marker + houses + hotel. */
+  document.querySelectorAll('[data-houses-for]').forEach(el => {
+    const idx = parseInt(el.dataset.housesFor, 10);
+    const p = gameState.properties[idx];
+    if (!p || p.ownerId === null) {
+      el.style.display = 'none';
+      el.innerHTML = '';
+      return;
+    }
+    el.style.display = 'flex';
+    if (p.hasHotel) {
+      el.innerHTML = `<span class="mini hotel">${hotelSVG()}</span>`;
+    } else {
+      /* One ownership house + one extra per built house, capped at 5 total visual. */
+      const count = 1 + (p.houses || 0);
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        html += `<span class="mini">${houseSVG('#3D9B5C')}</span>`;
+      }
+      el.innerHTML = html;
+    }
+  });
+}
+
+/* ============================================================ */
+/* SIDEBAR RENDERING                                            */
+/* ============================================================ */
+
+function renderPlayers(){
+  const list = $('players-list');
+  list.innerHTML = '';
+  if (!gameState) return;
+  gameState.players.forEach((p, idx) => {
+    const row = document.createElement('div');
+    let cls = 'player-row';
+    if (idx === gameState.currentPlayerIndex && gameState.status === 'playing') cls += ' active';
+    if (p.isBankrupt) cls += ' bankrupt';
+    if (p.isConnected === false) cls += ' disconnected';
+    row.className = cls;
+    row.style.borderLeftColor = ownerColor(idx);
+    const propsList = p.properties.map(idx => `<span class="property-chip" data-prop-detail="${idx}">${escapeHTML(TILE_DATA[idx].name)}</span>`).join('');
+    row.innerHTML = `
+      <div class="avatar">${p.token}</div>
+      <div class="info">
+        <div class="nm">${escapeHTML(p.name)}${p.inJail ? ' 🎓' : ''}${p.isConnected === false ? ' 📴' : ''}</div>
+        <div class="meta">${fmtMoney(p.money)} · ${p.properties.length} ${p.properties.length === 1 ? 'property' : 'properties'}</div>
+        <div class="property-list">${propsList}</div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  /* Property chip clicks */
+  list.querySelectorAll('[data-prop-detail]').forEach(chip => {
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      openPropertyDetail(parseInt(chip.dataset.propDetail, 10));
+    });
+  });
+}
+
+function renderTurnPanel(){
+  if (!gameState) return;
+  const player = currentPlayer();
+  $('turn-heading').textContent = `${player.name}'s Turn`;
+  $('turn-who').innerHTML = `${player.token} ${escapeHTML(player.name)}`;
+  setDieFace($('die-1'), gameState.diceRoll.d1);
+  setDieFace($('die-2'), gameState.diceRoll.d2);
+  setDieFace($('big-die-1'), gameState.diceRoll.d1);
+  setDieFace($('big-die-2'), gameState.diceRoll.d2);
+
+  let statusText = '';
+  if (player.inJail) statusText = `In Principal's Office (${player.jailTurnsRemaining || 0} turns left)`;
+  else if (player.consecutiveDoubles > 0 && gameState.hasRolled) statusText = `Doubles! Roll again.`;
+  $('turn-status').textContent = statusText;
+
+  renderTurnActions();
+}
+
+function renderTurnActions(){
+  const wrap = $('turn-actions');
+  wrap.innerHTML = '';
+  const player = currentPlayer();
+  if (!player) return;
+
+  /* In multiplayer, guests can only act when it's their turn. */
+  const canActLocally = canCurrentPlayerActOnThisDevice();
+
+  if (player.inJail) {
+    if (!canActLocally || gameState.isMoving) return;
+    const payBtn = document.createElement('button');
+    payBtn.className = 'btn small';
+    payBtn.textContent = `PAY ${JAIL_FINE} ⭐ TO LEAVE`;
+    payBtn.disabled = player.money < JAIL_FINE;
+    payBtn.onclick = () => requestAction({ type: 'PAY_JAIL_FINE' });
+    wrap.appendChild(payBtn);
+
+    const rollBtn = document.createElement('button');
+    rollBtn.className = 'btn small outline';
+    rollBtn.textContent = '🎲 ROLL FOR DOUBLES';
+    rollBtn.disabled = gameState.hasRolled;
+    rollBtn.onclick = () => requestAction({ type: 'ROLL_DICE' });
+    wrap.appendChild(rollBtn);
+    return;
+  }
+
+  if (!gameState.hasRolled) {
+    if (!canActLocally || gameState.isMoving) {
+      const wait = document.createElement('div');
+      wait.style.cssText = 'text-align:center;padding:10px;color:var(--nas-navy);opacity:0.6;font-weight:600;';
+      wait.textContent = canActLocally ? 'Rolling...' : `Waiting for ${player.name}...`;
+      wrap.appendChild(wait);
+      return;
+    }
+    const rollBtn = document.createElement('button');
+    rollBtn.className = 'btn';
+    rollBtn.textContent = '🎲 ROLL DICE';
+    rollBtn.onclick = () => requestAction({ type: 'ROLL_DICE' });
+    wrap.appendChild(rollBtn);
+    return;
+  }
+
+  /* Rolled — show end turn or roll again (if doubles) */
+  if (gameState.isMoving || pendingLanding) {
+    const wait = document.createElement('div');
+    wait.style.cssText = 'text-align:center;padding:10px;color:var(--nas-navy);opacity:0.6;font-weight:600;';
+    wait.textContent = 'Resolving...';
+    wrap.appendChild(wait);
+    return;
+  }
+
+  if (canActLocally) {
+    const isDoubles = gameState.diceRoll.d1 === gameState.diceRoll.d2;
+    if (isDoubles && !player.inJail) {
+      const rollAgain = document.createElement('button');
+      rollAgain.className = 'btn';
+      rollAgain.textContent = '🎲 ROLL AGAIN (Doubles!)';
+      rollAgain.onclick = () => requestAction({ type: 'ROLL_DICE' });
+      wrap.appendChild(rollAgain);
+    } else {
+      const endBtn = document.createElement('button');
+      endBtn.className = 'btn';
+      endBtn.textContent = 'END TURN →';
+      endBtn.onclick = () => requestAction({ type: 'END_TURN' });
+      wrap.appendChild(endBtn);
+    }
+  } else {
+    const wait = document.createElement('div');
+    wait.style.cssText = 'text-align:center;padding:10px;color:var(--nas-navy);opacity:0.6;font-weight:600;';
+    wait.textContent = `Waiting for ${player.name}...`;
+    wrap.appendChild(wait);
+  }
+}
+
+function renderLog(){
+  const log = $('log');
+  if (!log || !gameState) return;
+  log.innerHTML = gameState.log.slice(0, 50).map(entry => {
+    return `<p class="${escapeHTML(entry.klass)}">${entry.text}</p>`;
+  }).join('');
+}
+
+function renderAll(){
+  renderTokensOnBoard();
+  renderOwnership();
+  renderPlayers();
+  renderTurnPanel();
+  renderLog();
+  updateYourTurnBanner();
+  saveState();
+}
+
+function updateYourTurnBanner(){
+  const banner = $('your-turn-banner');
+  if (!gameState || gameState.mode !== 'multiplayer' || net.role !== 'guest') {
+    banner.classList.remove('show');
+    return;
+  }
+  const cp = currentPlayer();
+  if (cp && cp.id === net.myId && !gameState.isMoving && !pendingLanding) banner.classList.add('show');
+  else banner.classList.remove('show');
+}
+
+/* Determines if the current player should be controllable on this device. */
+function canCurrentPlayerActOnThisDevice(){
+  if (!gameState) return false;
+  if (gameState.mode === 'pass-and-play') return true;
+  /* Multiplayer: host always sees full controls so they can drive flow but
+     the "action" buttons should only be active for whichever player's turn it is.
+     We let only the active player's device drive. */
+  const cp = currentPlayer();
+  if (net.role === 'host') return cp && cp.id === net.myId;
+  if (net.role === 'guest') return cp && cp.id === net.myId;
+  return true;
+}
+
+/* ============================================================ */
+/* ACTION DISPATCH                                              */
+/* (Pass-and-play: local. Multiplayer guest: send to host.)     */
+/* ============================================================ */
+
+function requestAction(msg){
+  if (gameState.mode === 'pass-and-play' || net.role === 'host') {
+    handleAction(currentPlayer().id, msg);
+  } else if (net.role === 'guest') {
+    sendToHost(msg);
+  }
+}
+
+function handleAction(playerId, msg){
+  if (!gameState || gameState.status !== 'playing') return;
+  const cp = currentPlayer();
+  if (!cp || cp.id !== playerId) {
+    /* not their turn — silently drop except for CARD_ACKNOWLEDGED which has no actor */
+    if (msg.type !== 'CARD_ACKNOWLEDGED') return;
+  }
+  switch (msg.type) {
+    case 'ROLL_DICE':           doRoll(); break;
+    case 'BUY_PROPERTY':        doBuyProperty(msg.tileIndex); break;
+    case 'SKIP_PROPERTY':       doSkipProperty(); break;
+    case 'BUILD_HOUSE':         doBuildHouse(msg.tileIndex); break;
+    case 'PAY_JAIL_FINE':       doPayJailFine(); break;
+    case 'END_TURN':            doEndTurn(); break;
+    case 'CARD_ACKNOWLEDGED':   doCardAck(); break;
+  }
+  broadcastState();
+  renderAll();
+}
+
+/* ============================================================ */
+/* CORE GAME LOGIC (executed on host / in pass-and-play)        */
+/* ============================================================ */
+
+function doRoll(){
+  if (gameState.isMoving) return;
+  const player = currentPlayer();
+  if (gameState.hasRolled && gameState.diceRoll.d1 !== gameState.diceRoll.d2 && !player.inJail) return;
+
+  const d1 = 1 + Math.floor(Math.random()*6);
+  const d2 = 1 + Math.floor(Math.random()*6);
+  gameState.diceRoll = { d1, d2 };
+  gameState.hasRolled = true;
+  const total = d1 + d2;
+  const isDoubles = d1 === d2;
+
+  animateBigDice(d1, d2);
+
+  logEvent(`<span class="turn">${escapeHTML(player.name)}</span> rolled ${d1}+${d2} = ${total}${isDoubles ? ' (doubles!)' : ''}`, 'turn');
+
+  if (player.inJail) {
+    if (isDoubles) {
+      player.inJail = false;
+      player.jailTurnsRemaining = 0;
+      logEvent(`<span class="event">→ Escaped Principal's Office with doubles!</span>`);
+      beginMovement(total);
+    } else {
+      player.jailTurnsRemaining = (player.jailTurnsRemaining || 0) - 1;
+      if (player.jailTurnsRemaining <= 0) {
+        /* Forced pay */
+        if (player.money >= JAIL_FINE) {
+          player.money -= JAIL_FINE;
+          player.inJail = false;
+          logEvent(`<span class="event">→ Paid ${JAIL_FINE} ⭐ and left after 3 turns</span>`);
+          beginMovement(total);
+        } else {
+          handleBankruptcy(player, null, JAIL_FINE);
+        }
+      } else {
+        logEvent(`<span class="event">→ Stayed in Principal's Office</span>`);
+        /* End turn since no movement happened */
+        setTimeout(() => { doEndTurn(); broadcastState(); renderAll(); }, 800);
+      }
+    }
+    return;
+  }
+
+  if (isDoubles) {
+    player.consecutiveDoubles = (player.consecutiveDoubles || 0) + 1;
+    if (player.consecutiveDoubles >= 3) {
+      logEvent(`<span class="toddle">→ 3 doubles in a row → off to Principal's Office!</span>`);
+      sendToJail(player);
+      return;
+    }
+  } else {
+    player.consecutiveDoubles = 0;
+  }
+  beginMovement(total);
+}
+
+function beginMovement(steps){
+  const player = currentPlayer();
+  gameState.isMoving = true;
+  pendingLanding = true;
+  broadcastState();
+  renderAll();
+  /* Step-by-step animation. */
+  let remaining = steps;
+  const step = () => {
+    if (remaining <= 0) {
+      gameState.isMoving = false;
+      pendingLanding = true;
+      onLandingTile();
+      return;
+    }
+    const old = player.tileIndex;
+    player.tileIndex = (player.tileIndex + 1) % 40;
+    if (old > player.tileIndex) {
+      /* Passed GO */
+      player.money += PASS_GO_BONUS;
+      logEvent(`<span class="event">→ ${escapeHTML(player.name)} passed GO, collected ${PASS_GO_BONUS} ⭐</span>`);
+    }
+    renderTokensOnBoard();
+    broadcastState();
+    remaining--;
+    setTimeout(step, MOVE_ANIM_MS);
+  };
+  setTimeout(step, MOVE_ANIM_MS);
+}
+
+function onLandingTile(){
+  const player = currentPlayer();
+  const tile = TILE_DATA[player.tileIndex];
+  const total = gameState.diceRoll.d1 + gameState.diceRoll.d2;
+  logEvent(`<span class="event">→ Landed on ${escapeHTML(tile.name)}</span>`);
+
+  if (tile.type === 'corner-go') {
+    pendingLanding = false;
+  } else if (tile.type === 'corner-jail') {
+    pendingLanding = false;
+  } else if (tile.type === 'corner-free') {
+    pendingLanding = false;
+  } else if (tile.type === 'corner-gotojail') {
+    sendToJail(player);
+    return;
+  } else if (tile.type === 'tax') {
+    if (player.money >= tile.tax) {
+      player.money -= tile.tax;
+      logEvent(`<span class="toddle">→ Paid School Fees ${tile.tax} ⭐</span>`);
+      pendingLanding = false;
+    } else {
+      handleBankruptcy(player, null, tile.tax);
+      return;
+    }
+  } else if (tile.type === 'chance') {
+    drawCardForLanding('chance');
+    return;
+  } else if (tile.type === 'toddle') {
+    drawCardForLanding('toddle');
+    return;
+  } else if (tile.type === 'property' || tile.type === 'station' || tile.type === 'utility') {
+    const prop = gameState.properties[player.tileIndex];
+    if (!prop || prop.ownerId === null) {
+      /* Show purchase modal */
+      if (currentPlayerControlsThisDevice()) {
+        openPropertyModal(player.tileIndex);
+      }
+      /* still pendingLanding=true until they buy or skip */
+    } else if (prop.ownerId === player.id) {
+      pendingLanding = false;
+    } else {
+      /* Pay rent */
+      const rent = calcRent(player.tileIndex, total);
+      const owner = gameState.players.find(p => p.id === prop.ownerId);
+      payRent(player, owner, rent, tile);
+      return;
+    }
+  }
+  broadcastState();
+  renderAll();
+}
+
+function currentPlayerControlsThisDevice(){
+  if (gameState.mode === 'pass-and-play') return true;
+  const cp = currentPlayer();
+  return cp && cp.id === net.myId;
+}
+
+function drawCardForLanding(deckKind){
+  const player = currentPlayer();
+  let cardId, deck, cards;
+  if (deckKind === 'chance') {
+    if (gameState.chanceDeck.length === 0) gameState.chanceDeck = shuffleDeck(CHANCE_CARDS.map(c=>c.id));
+    cardId = gameState.chanceDeck.pop();
+    cards = CHANCE_CARDS;
+  } else {
+    if (gameState.toddleDeck.length === 0) gameState.toddleDeck = shuffleDeck(TODDLE_CARDS.map(c=>c.id));
+    cardId = gameState.toddleDeck.pop();
+    cards = TODDLE_CARDS;
+  }
+  const card = cards.find(c => c.id === cardId);
+  gameState.activeCard = { deck: deckKind, cardId };
+  /* Apply numeric effect immediately so state stays consistent. */
+  applyCardEffectImmediate(player, card);
+  broadcastState();
+  /* Show modal on all clients */
+  showCardModal(card, deckKind);
+}
+
+function applyCardEffectImmediate(player, card){
+  const e = card.effect;
+  if (e.type === 'collect') {
+    player.money += e.amount;
+    logEvent(`<span class="event">→ ${escapeHTML(player.name)}: "${escapeHTML(card.text)}"</span>`);
+  } else if (e.type === 'pay') {
+    if (player.money >= e.amount) {
+      player.money -= e.amount;
+      logEvent(`<span class="toddle">→ ${escapeHTML(player.name)}: "${escapeHTML(card.text)}"</span>`);
+    } else {
+      logEvent(`<span class="toddle">→ ${escapeHTML(player.name)}: "${escapeHTML(card.text)}"</span>`);
+      handleBankruptcy(player, null, e.amount);
+    }
+  } else if (e.type === 'collect-from-each') {
+    let total = 0;
+    gameState.players.forEach(other => {
+      if (other.id === player.id || other.isBankrupt) return;
+      const give = Math.min(e.amount, other.money);
+      other.money -= give;
+      total += give;
+      if (other.money < e.amount) {
+        /* not a full bankruptcy trigger, just paid what they could */
+      }
+    });
+    player.money += total;
+    logEvent(`<span class="event">→ ${escapeHTML(player.name)} collected ${total} ⭐ from everyone</span>`);
+  } else if (e.type === 'move-to') {
+    if (e.tileIndex < player.tileIndex) player.money += PASS_GO_BONUS;
+    player.tileIndex = e.tileIndex;
+    logEvent(`<span class="event">→ ${escapeHTML(player.name)} moved to ${TILE_DATA[e.tileIndex].name}</span>`);
+  } else if (e.type === 'move-back') {
+    player.tileIndex = (player.tileIndex - e.tiles + 40) % 40;
+    logEvent(`<span class="event">→ Moved back ${e.tiles} tiles to ${TILE_DATA[player.tileIndex].name}</span>`);
+  } else if (e.type === 'go-to-jail') {
+    sendToJail(player);
+  }
+}
+
+function doCardAck(){
+  /* After the card modal is dismissed, if the card moved the player to a new
+     tile that needs further resolution (move-to, move-back), resolve it. */
+  const player = currentPlayer();
+  if (!gameState.activeCard) return;
+  const card = findCard(gameState.activeCard.cardId);
+  gameState.activeCard = null;
+  if (player.isBankrupt) { pendingLanding = false; broadcastState(); renderAll(); return; }
+  if (card.effect.type === 'move-to' || card.effect.type === 'move-back') {
+    /* Resolve the new tile (without re-drawing cards to avoid infinite loops) */
+    pendingLanding = true;
+    resolveSecondaryLanding();
+  } else if (card.effect.type === 'go-to-jail') {
+    pendingLanding = false;
+  } else {
+    pendingLanding = false;
+  }
+  broadcastState();
+  renderAll();
+}
+
+function resolveSecondaryLanding(){
+  const player = currentPlayer();
+  const tile = TILE_DATA[player.tileIndex];
+  const total = gameState.diceRoll.d1 + gameState.diceRoll.d2;
+  if (tile.type === 'property' || tile.type === 'station' || tile.type === 'utility') {
+    const prop = gameState.properties[player.tileIndex];
+    if (!prop || prop.ownerId === null) {
+      if (currentPlayerControlsThisDevice()) openPropertyModal(player.tileIndex);
+    } else if (prop.ownerId === player.id) {
+      pendingLanding = false;
+    } else {
+      const rent = calcRent(player.tileIndex, total);
+      const owner = gameState.players.find(p => p.id === prop.ownerId);
+      payRent(player, owner, rent, tile);
+    }
+  } else if (tile.type === 'tax') {
+    if (player.money >= tile.tax) {
+      player.money -= tile.tax;
+      pendingLanding = false;
+    } else {
+      handleBankruptcy(player, null, tile.tax);
+    }
+  } else {
+    pendingLanding = false;
+  }
+}
+
+function payRent(player, owner, rent, tile){
+  if (player.money >= rent) {
+    player.money -= rent;
+    owner.money += rent;
+    logEvent(`<span class="toddle">→ ${escapeHTML(player.name)} paid ${rent} ⭐ rent to ${escapeHTML(owner.name)}</span>`);
+    pendingLanding = false;
+    broadcastState();
+    renderAll();
+  } else {
+    handleBankruptcy(player, owner, rent);
+  }
+}
+
+function doBuyProperty(tileIdx){
+  const player = currentPlayer();
+  const tile = TILE_DATA[tileIdx];
+  if (player.tileIndex !== tileIdx) return;
+  if (player.money < tile.price) return;
+  player.money -= tile.price;
+  player.properties.push(tileIdx);
+  if (!gameState.properties[tileIdx]) gameState.properties[tileIdx] = { ownerId: null, houses: 0, hasHotel: false };
+  gameState.properties[tileIdx].ownerId = player.id;
+  logEvent(`<span class="event">→ ${escapeHTML(player.name)} bought ${escapeHTML(tile.name)} for ${tile.price} ⭐</span>`);
+  pendingLanding = false;
+  closeModal('modal-property');
+}
+
+function doSkipProperty(){
+  pendingLanding = false;
+  closeModal('modal-property');
+}
+
+function doBuildHouse(tileIdx){
+  const player = currentPlayer();
+  const tile = TILE_DATA[tileIdx];
+  const prop = gameState.properties[tileIdx];
+  if (!prop || prop.ownerId !== player.id) return;
+  if (tile.type !== 'property') return;
+  if (getMonopolyOwner(tile.zone) !== player.id) return;
+  if (prop.hasHotel) return;
+  /* Even building: must be the minimum house count in the zone */
+  const minHouses = Math.min(...ZONES[tile.zone].tiles.map(t => {
+    const pp = gameState.properties[t];
+    if (pp && pp.hasHotel) return 5;
+    return pp ? pp.houses : 0;
+  }));
+  if (prop.houses > minHouses) {
+    showToast('Build evenly across the zone first');
+    return;
+  }
+  if (player.money < tile.houseCost) {
+    showToast('Not enough money');
+    return;
+  }
+  player.money -= tile.houseCost;
+  if (prop.houses === 4) {
+    prop.houses = 0;
+    prop.hasHotel = true;
+    logEvent(`<span class="event">→ ${escapeHTML(player.name)} built a HOTEL on ${escapeHTML(tile.name)}</span>`);
+  } else {
+    prop.houses += 1;
+    logEvent(`<span class="event">→ ${escapeHTML(player.name)} built a house on ${escapeHTML(tile.name)} (${prop.houses})</span>`);
+  }
+}
+
+function doPayJailFine(){
+  const player = currentPlayer();
+  if (!player.inJail) return;
+  if (player.money < JAIL_FINE) { showToast('Not enough money'); return; }
+  player.money -= JAIL_FINE;
+  player.inJail = false;
+  player.jailTurnsRemaining = 0;
+  logEvent(`<span class="event">→ ${escapeHTML(player.name)} paid ${JAIL_FINE} ⭐ to leave Principal's Office</span>`);
+}
+
+function sendToJail(player){
+  player.tileIndex = 10;
+  player.inJail = true;
+  player.jailTurnsRemaining = 3;
+  player.consecutiveDoubles = 0;
+  logEvent(`<span class="toddle">→ ${escapeHTML(player.name)} sent to Principal's Office</span>`);
+  pendingLanding = false;
+  gameState.isMoving = false;
+  /* Doubles roll exhausted any extra-turn rights */
+  /* Treat as turn end (Monopoly rule): if doubles roll sent you to jail, turn ends */
+  setTimeout(() => { doEndTurn(); broadcastState(); renderAll(); }, 700);
+}
+
+function handleBankruptcy(player, owedTo, owed){
+  /* Try to liquidate houses for half value */
+  let raised = 0;
+  for (const idx of [...player.properties]) {
+    const prop = gameState.properties[idx];
+    if (!prop) continue;
+    const tile = TILE_DATA[idx];
+    if (prop.hasHotel) {
+      raised += Math.floor(tile.houseCost * 5 / 2);
+      prop.hasHotel = false; prop.houses = 0;
+    }
+    while (prop.houses > 0) {
+      raised += Math.floor(tile.houseCost / 2);
+      prop.houses -= 1;
+    }
+  }
+  player.money += raised;
+  if (player.money >= owed) {
+    player.money -= owed;
+    if (owedTo) owedTo.money += owed;
+    logEvent(`<span class="toddle">→ ${escapeHTML(player.name)} sold houses to pay ${owed} ⭐</span>`);
+    pendingLanding = false;
+    return;
+  }
+  /* Full bankruptcy */
+  logEvent(`<span class="toddle">→ ${escapeHTML(player.name)} went bankrupt!</span>`);
+  if (owedTo) owedTo.money += player.money;
+  player.money = 0;
+  /* Return properties to bank (unowned) */
+  for (const idx of player.properties) {
+    if (gameState.properties[idx]) {
+      gameState.properties[idx] = { ownerId: null, houses: 0, hasHotel: false };
+    }
+  }
+  player.properties = [];
+  player.isBankrupt = true;
+  pendingLanding = false;
+  /* Check win */
+  const remaining = gameState.players.filter(p => !p.isBankrupt && p.isConnected !== false);
+  if (gameState.players.filter(p => !p.isBankrupt).length <= 1) {
+    setTimeout(() => endGame(), 600);
+    return;
+  }
+  setTimeout(() => { doEndTurn(); broadcastState(); renderAll(); }, 700);
+}
+
+function doEndTurn(){
+  /* Move to next non-bankrupt player */
+  if (!gameState) return;
+  const player = currentPlayer();
+  if (player) player.consecutiveDoubles = 0;
+  gameState.hasRolled = false;
+  gameState.diceRoll = { d1: 0, d2: 0 };
+
+  let nextIdx = gameState.currentPlayerIndex;
+  for (let i = 0; i < gameState.players.length; i++) {
+    nextIdx = (nextIdx + 1) % gameState.players.length;
+    const cand = gameState.players[nextIdx];
+    if (!cand.isBankrupt) {
+      gameState.currentPlayerIndex = nextIdx;
+      break;
+    }
+  }
+  /* Hide center dice if visible */
+  const cd = $('center-dice');
+  if (cd) cd.classList.remove('show');
+  logEvent(`<span class="turn">— ${escapeHTML(currentPlayer().name)}'s turn —</span>`, 'system');
+}
+
+function animateBigDice(d1, d2){
+  const cd = $('center-dice');
+  if (!cd) return;
+  cd.classList.add('show');
+  const e1 = $('big-die-1'), e2 = $('big-die-2');
+  e1.classList.add('rolling'); e2.classList.add('rolling');
+  setDieFace(e1, Math.floor(Math.random()*6)+1);
+  setDieFace(e2, Math.floor(Math.random()*6)+1);
+  let ticks = 0;
+  const id = setInterval(() => {
+    ticks++;
+    setDieFace(e1, Math.floor(Math.random()*6)+1);
+    setDieFace(e2, Math.floor(Math.random()*6)+1);
+    if (ticks > 4) {
+      clearInterval(id);
+      e1.classList.remove('rolling'); e2.classList.remove('rolling');
+      setDieFace(e1, d1);
+      setDieFace(e2, d2);
+    }
+  }, 80);
+}
+
+/* ============================================================ */
+/* MODALS                                                       */
+/* ============================================================ */
+
+function showModal(id){ $(id).classList.add('show'); }
+function closeModal(id){ $(id).classList.remove('show'); }
+
+function openPropertyModal(tileIdx){
+  const tile = TILE_DATA[tileIdx];
+  const stripColor = tile.zone ? ZONES[tile.zone].color : 'var(--nas-navy)';
+  $('prop-strip').style.background = stripColor;
+  $('prop-name').textContent = tile.name;
+  $('prop-desc').textContent = tile.type === 'property' ? `${zoneDisplay(tile.zone)}` :
+                               (tile.type === 'station' ? 'School Gate (Station)' : 'Utility');
+  $('prop-price').textContent = `${tile.price} ⭐`;
+  /* Rent preview */
+  const rents = rentTable(tileIdx);
+  $('prop-rent').innerHTML = rents.map(([k,v]) => `<div><span>${k}</span><strong>${v} ⭐</strong></div>`).join('');
+  const cp = currentPlayer();
+  $('prop-buy').disabled = cp.money < tile.price;
+  $('prop-buy').textContent = cp.money < tile.price ? 'NOT ENOUGH' : `BUY ${tile.price} ⭐`;
+  $('prop-buy').onclick = () => requestAction({ type: 'BUY_PROPERTY', tileIndex: tileIdx });
+  $('prop-skip').onclick = () => requestAction({ type: 'SKIP_PROPERTY' });
+  showModal('modal-property');
+}
+
+function zoneDisplay(zone){
+  return {
+    'early-years': 'Early Years',
+    'primary-life': 'Primary Life',
+    'libraries': 'Libraries & Learning',
+    'play-zones': 'Play Zones',
+    'food-court': 'Food Court',
+    'sports': 'Sports',
+    'arts-science': 'Arts & Science'
+  }[zone] || zone;
+}
+
+function showCardModal(card, deckKind){
+  $('card-strip').style.background = deckKind === 'chance' ? 'var(--accent-gold)' : 'var(--c5)';
+  $('card-title').textContent = deckKind === 'chance' ? '🎁 Chance' : '📱 Toddle Card';
+  $('card-text').textContent = card.text;
+  const eff = card.effect;
+  const fx = $('card-effect');
+  fx.className = 'money-effect';
+  if (eff.type === 'collect') { fx.textContent = `+${eff.amount} ⭐`; fx.classList.add('positive'); }
+  else if (eff.type === 'pay') { fx.textContent = `−${eff.amount} ⭐`; fx.classList.add('negative'); }
+  else if (eff.type === 'collect-from-each') { fx.textContent = `+${eff.amount} ⭐ × each`; fx.classList.add('positive'); }
+  else fx.textContent = '';
+  $('card-ok').onclick = () => {
+    closeModal('modal-card');
+    requestAction({ type: 'CARD_ACKNOWLEDGED' });
+  };
+  showModal('modal-card');
+}
+
+function openPropertyDetail(tileIdx){
+  const tile = TILE_DATA[tileIdx];
+  if (!['property','station','utility'].includes(tile.type)) return;
+  const prop = gameState.properties[tileIdx];
+  const stripColor = tile.zone ? ZONES[tile.zone].color : 'var(--nas-navy)';
+  $('pd-strip').style.background = stripColor;
+  $('pd-name').textContent = tile.name;
+  let desc = tile.type === 'property' ? zoneDisplay(tile.zone) :
+             (tile.type === 'station' ? 'School Gate' : 'Utility');
+  if (prop && prop.ownerId) {
+    const owner = gameState.players.find(p => p.id === prop.ownerId);
+    desc += ` · Owned by ${owner ? owner.name : '?'}`;
+    if (prop.hasHotel) desc += ' · 🏨 Hotel';
+    else if (prop.houses) desc += ` · ${'🏠'.repeat(prop.houses)} ${prop.houses}`;
+  } else {
+    desc += ' · Unowned';
+  }
+  $('pd-desc').textContent = desc;
+  const rents = rentTable(tileIdx);
+  $('pd-rent').innerHTML = rents.map(([k,v]) => `<div><span>${k}</span><strong>${v} ⭐</strong></div>`).join('');
+  const cp = currentPlayer();
+  const buildBtn = $('pd-build');
+  const buildArea = $('pd-build-area');
+  buildArea.innerHTML = '';
+  if (
+    tile.type === 'property' &&
+    prop && prop.ownerId === cp.id &&
+    getMonopolyOwner(tile.zone) === cp.id &&
+    !prop.hasHotel &&
+    cp.money >= tile.houseCost &&
+    canCurrentPlayerActOnThisDevice()
+  ) {
+    buildBtn.classList.remove('hidden');
+    buildBtn.textContent = prop.houses === 4 ? `BUILD HOTEL (${tile.houseCost} ⭐)` : `BUILD HOUSE (${tile.houseCost} ⭐)`;
+    buildBtn.onclick = () => {
+      requestAction({ type: 'BUILD_HOUSE', tileIndex: tileIdx });
+      closeModal('modal-property-detail');
+    };
+  } else {
+    buildBtn.classList.add('hidden');
+  }
+  $('pd-close').onclick = () => closeModal('modal-property-detail');
+  showModal('modal-property-detail');
+}
+
+function onTileClick(idx){
+  if (!gameState || gameState.status !== 'playing') return;
+  openPropertyDetail(idx);
+}
+
+/* ============================================================ */
+/* GAME LIFECYCLE                                               */
+/* ============================================================ */
+
+function startPassAndPlay(players){
+  gameState = freshGameState('pass-and-play');
+  gameState.players = players.map((p, i) => ({
+    id: 'p' + (i+1),
+    name: p.name || `Player ${i+1}`,
+    token: p.token,
+    peerId: null,
+    tileIndex: 0,
+    money: STARTING_MONEY,
+    properties: [],
+    inJail: false,
+    jailTurnsRemaining: 0,
+    isBankrupt: false,
+    isConnected: true,
+    consecutiveDoubles: 0
+  }));
+  /* Init properties map */
+  for (const t of TILE_DATA) {
+    if (['property','station','utility'].includes(t.type)) {
+      gameState.properties[t.i] = { ownerId: null, houses: 0, hasHotel: false };
+    }
+  }
+  gameState.status = 'playing';
+  logEvent(`<span class="system">— Game started! Pass-and-play mode —</span>`, 'system');
+  logEvent(`<span class="turn">— ${escapeHTML(currentPlayer().name)}'s turn —</span>`, 'system');
+  net.role = null; net.myId = null;
+  showScreen('screen-game');
+  renderBoard();
+  renderAll();
+  $('room-badge').classList.add('hidden');
+}
+
+function endGame(){
+  if (!gameState) return;
+  gameState.status = 'ended';
+  /* Rank by net worth */
+  const ranked = [...gameState.players].sort((a,b) => netWorth(b) - netWorth(a));
+  const winner = ranked.find(p => !p.isBankrupt) || ranked[0];
+  $('win-name').textContent = `${winner.token} ${winner.name}`;
+  $('win-worth').textContent = `${fmtMoney(netWorth(winner))} net worth`;
+  $('win-ranking').innerHTML = ranked.map((p,i) => `
+    <div class="ranking-row">
+      <span>${i+1}. ${p.token} ${escapeHTML(p.name)}${p.isBankrupt ? ' (bankrupt)' : ''}</span>
+      <strong>${fmtMoney(netWorth(p))}</strong>
+    </div>
+  `).join('');
+  renderConfetti();
+  showScreen('screen-win');
+  broadcastState();
+  saveState();
+}
+
+function renderConfetti(){
+  const c = $('confetti');
+  c.innerHTML = '';
+  const colors = ['#2BB6B0','#E8B84B','#D14444','#3D9B5C','#E07A9B','#0E2A47'];
+  for (let i = 0; i < 70; i++) {
+    const d = document.createElement('div');
+    d.className = 'confetto';
+    d.style.left = Math.random() * 100 + 'vw';
+    d.style.background = colors[i % colors.length];
+    d.style.animationDuration = (2 + Math.random()*2.5) + 's';
+    d.style.animationDelay = (Math.random() * 1.5) + 's';
+    d.style.transform = `rotate(${Math.random()*360}deg)`;
+    c.appendChild(d);
+  }
+}
+
+/* ============================================================ */
+/* PASS-AND-PLAY SETUP UI                                       */
+/* ============================================================ */
+
+let papPlayers = [
+  { name: 'Mum',   token: '⚽' },
+  { name: 'Dad',   token: '📚' }
+];
+
+function renderPapSetup(){
+  const wrap = $('pap-players');
+  wrap.innerHTML = '';
+  papPlayers.forEach((p, idx) => {
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.innerHTML = `
+      <div class="row">
+        <label>Player ${idx+1}</label>
+        <input type="text" data-pap-name="${idx}" value="${escapeHTML(p.name)}" placeholder="Name" maxlength="14">
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <label>Token</label>
+        <div class="token-picker" data-pap-tokens="${idx}"></div>
+      </div>
+    `;
+    wrap.appendChild(card);
+    const picker = card.querySelector(`[data-pap-tokens="${idx}"]`);
+    ALL_TOKENS.forEach(tk => {
+      const tb = document.createElement('button');
+      tb.className = 'token-btn' + (p.token === tk ? ' selected' : '');
+      tb.textContent = tk;
+      const takenByOther = papPlayers.some((op, oi) => oi !== idx && op.token === tk);
+      tb.disabled = takenByOther && p.token !== tk;
+      tb.onclick = () => {
+        papPlayers[idx].token = tk;
+        renderPapSetup();
+      };
+      picker.appendChild(tb);
+    });
+    card.querySelector(`[data-pap-name="${idx}"]`).addEventListener('input', e => {
+      papPlayers[idx].name = e.target.value;
+    });
+  });
+  $('btn-add-player').disabled = papPlayers.length >= 6;
+  $('btn-remove-player').disabled = papPlayers.length <= 2;
+}
+
+/* ============================================================ */
+/* MULTIPLAYER (PEERJS)                                         */
+/* ============================================================ */
+
+function genRoomCode(){
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+
+function hostStartLobby(){
+  const code = genRoomCode();
+  gameState = freshGameState('multiplayer');
+  gameState.roomCode = code;
+  net.role = 'host';
+  net.myId = 'p1';
+  net.hostId = 'p1';
+  /* Add host as first player (placeholder; user fills in name/token) */
+  const hostPlayer = {
+    id: 'p1',
+    name: $('host-name').value || 'Host',
+    token: getDefaultTokenChoice(0),
+    peerId: 'host',
+    tileIndex: 0,
+    money: STARTING_MONEY,
+    properties: [],
+    inJail: false,
+    jailTurnsRemaining: 0,
+    isBankrupt: false,
+    isConnected: true,
+    consecutiveDoubles: 0
+  };
+  gameState.players = [hostPlayer];
+  for (const t of TILE_DATA) {
+    if (['property','station','utility'].includes(t.type)) {
+      gameState.properties[t.i] = { ownerId: null, houses: 0, hasHotel: false };
+    }
+  }
+
+  $('room-code').textContent = code;
+  /* Show QR immediately — does not require the broker connection. */
+  renderQR(code);
+  renderTokenPicker('host-token-picker', hostPlayer.token, (tk) => {
+    hostPlayer.token = tk;
+    renderTokenPicker('host-token-picker', hostPlayer.token);
+    renderLobby();
+  });
+  $('host-name').addEventListener('input', e => {
+    hostPlayer.name = e.target.value || 'Host';
+    renderLobby();
+  });
+
+  /* PeerJS init */
+  $('host-status').textContent = 'Connecting to PeerJS broker...';
+  try {
+    net.peer = new Peer(`nas-monopoly-${code}`);
+  } catch(e) {
+    $('host-status').textContent = 'PeerJS unavailable. Multiplayer offline.';
+    return;
+  }
+  net.peer.on('open', id => {
+    $('host-status').textContent = `Room open — share code "${code}"`;
+    renderLobby();
+  });
+  net.peer.on('connection', conn => {
+    net.conns[conn.peer] = conn;
+    conn.on('data', data => onHostReceive(conn, data));
+    conn.on('open', () => {
+      /* Send current state */
+      conn.send({ type: 'STATE_UPDATE', state: gameState });
+    });
+    conn.on('close', () => onGuestDisconnect(conn.peer));
+    conn.on('error', () => onGuestDisconnect(conn.peer));
+  });
+  net.peer.on('error', err => {
+    console.error('Peer error', err);
+    $('host-status').textContent = `Connection error: ${err.type || 'unknown'}. Pass-and-play still works.`;
+  });
+}
+
+function renderQR(code){
+  const wrap = $('qr-container');
+  wrap.innerHTML = '';
+  wrap.classList.remove('hidden');
+
+  /* If running from file:// the URL is useless for other devices,
+     so encode the bare code instead — guests can type it. */
+  const onFile = location.protocol === 'file:';
+  const joinURL = onFile ? code : `${location.href.split('?')[0]}?join=${code}`;
+
+  const caption = document.createElement('div');
+  caption.style.cssText = 'font-family:Fredoka,sans-serif;font-weight:600;font-size:11px;color:#0E2A47;text-align:center;margin-bottom:8px;letter-spacing:0.5px;';
+  caption.textContent = 'SCAN OR ENTER CODE';
+  wrap.appendChild(caption);
+
+  let rendered = false;
+
+  /* Primary: local QRCode library. */
+  if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
+    try {
+      QRCode.toCanvas(joinURL, { width: 200, margin: 2, color: { dark: '#0E2A47', light: '#FBF7EE' } }, (err, canvas) => {
+        if (err || !canvas) {
+          if (!rendered) renderQRFallback(wrap, joinURL);
+        } else {
+          if (rendered) return;
+          rendered = true;
+          wrap.appendChild(canvas);
+          appendQRFooter(wrap, code, onFile);
+        }
+      });
+      /* Library is async; mark a deadline. If no canvas in 1.2s, use the network fallback. */
+      setTimeout(() => {
+        if (!rendered) {
+          rendered = true;
+          renderQRFallback(wrap, joinURL);
+          appendQRFooter(wrap, code, onFile);
+        }
+      }, 1200);
+      return;
+    } catch (e) {
+      /* fall through to fallback */
+    }
+  }
+
+  rendered = true;
+  renderQRFallback(wrap, joinURL);
+  appendQRFooter(wrap, code, onFile);
+}
+
+function renderQRFallback(wrap, payload){
+  const img = document.createElement('img');
+  img.alt = 'Room QR code';
+  img.width = 200; img.height = 200;
+  img.style.cssText = 'display:block;width:200px;height:200px;border-radius:6px;';
+  img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(payload)}&color=0E2A47&bgcolor=FBF7EE&margin=4`;
+  img.onerror = () => {
+    img.replaceWith(asciiCodeBlock(payload));
+  };
+  wrap.appendChild(img);
+}
+
+function appendQRFooter(wrap, code, onFile){
+  const foot = document.createElement('div');
+  foot.style.cssText = 'font-family:Bungee,cursive;font-size:18px;color:#0E2A47;text-align:center;margin-top:10px;letter-spacing:4px;';
+  foot.textContent = code;
+  wrap.appendChild(foot);
+  if (onFile) {
+    const note = document.createElement('div');
+    note.style.cssText = 'font-family:Fredoka,sans-serif;font-size:10px;color:#0E2A47;opacity:0.65;text-align:center;margin-top:4px;max-width:220px;';
+    note.textContent = 'QR holds the code only. Type it on the other device.';
+    wrap.appendChild(note);
+  }
+}
+
+function asciiCodeBlock(text){
+  const div = document.createElement('div');
+  div.style.cssText = 'font-family:Bungee,cursive;font-size:34px;color:#0E2A47;padding:30px;letter-spacing:6px;background:#FBF7EE;border:2px dashed #0E2A47;border-radius:8px;';
+  div.textContent = text;
+  return div;
+}
+
+function renderLobby(){
+  const list = $('lobby-list');
+  list.innerHTML = '';
+  gameState.players.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'lobby-player';
+    row.innerHTML = `
+      <div class="av">${p.token}</div>
+      <div class="nm">${escapeHTML(p.name)}</div>
+      <div class="tag">${i === 0 ? 'HOST' : 'GUEST'}</div>
+    `;
+    list.appendChild(row);
+  });
+  $('btn-host-start').disabled = gameState.players.length < 2;
+}
+
+function getDefaultTokenChoice(seedIdx){
+  const used = (gameState && gameState.players ? gameState.players.map(p=>p.token) : []);
+  return ALL_TOKENS.find(t => !used.includes(t)) || ALL_TOKENS[seedIdx % ALL_TOKENS.length];
+}
+
+function renderTokenPicker(containerId, selected, onPick){
+  const c = $(containerId);
+  c.innerHTML = '';
+  ALL_TOKENS.forEach(tk => {
+    const btn = document.createElement('button');
+    btn.className = 'token-btn' + (tk === selected ? ' selected' : '');
+    btn.textContent = tk;
+    const takenByOther = gameState && gameState.players && gameState.players.some(p => p.token === tk && p.token !== selected);
+    btn.disabled = takenByOther;
+    btn.onclick = () => onPick && onPick(tk);
+    c.appendChild(btn);
+  });
+}
+
+function onHostReceive(conn, msg){
+  if (msg.type === 'JOIN_REQUEST') {
+    if (gameState.status !== 'lobby') {
+      conn.send({ type: 'JOIN_REJECTED', reason: 'Game already started' });
+      return;
+    }
+    if (gameState.players.length >= 6) {
+      conn.send({ type: 'JOIN_REJECTED', reason: 'Game full' });
+      return;
+    }
+    const tokenTaken = gameState.players.some(p => p.token === msg.tokenChoice);
+    const token = tokenTaken ? getDefaultTokenChoice(gameState.players.length) : msg.tokenChoice;
+    const id = 'p' + (gameState.players.length + 1);
+    const newPlayer = {
+      id, name: msg.playerName || `Player ${gameState.players.length+1}`,
+      token, peerId: conn.peer, tileIndex: 0, money: STARTING_MONEY,
+      properties: [], inJail: false, jailTurnsRemaining: 0, isBankrupt: false,
+      isConnected: true, consecutiveDoubles: 0
+    };
+    gameState.players.push(newPlayer);
+    conn.send({ type: 'JOIN_ACCEPTED', yourPlayerId: id, state: gameState });
+    /* Broadcast new state to all guests */
+    broadcastState();
+    renderLobby();
+    return;
+  }
+  /* Action from a guest */
+  const guest = gameState.players.find(p => p.peerId === conn.peer);
+  if (!guest) return;
+  handleAction(guest.id, msg);
+}
+
+function onGuestDisconnect(peerId){
+  const p = gameState && gameState.players.find(x => x.peerId === peerId);
+  if (p) {
+    p.isConnected = false;
+    logEvent(`<span class="toddle">→ ${escapeHTML(p.name)} disconnected</span>`);
+    /* If it was their turn, auto-skip */
+    if (gameState.status === 'playing') {
+      const cp = currentPlayer();
+      if (cp && cp.id === p.id) {
+        doEndTurn();
+      }
+    }
+    broadcastState();
+    renderAll();
+  }
+  delete net.conns[peerId];
+}
+
+function broadcastState(){
+  if (!gameState) return;
+  if (net.role !== 'host') return;
+  const payload = { type: 'STATE_UPDATE', state: gameState };
+  Object.values(net.conns).forEach(conn => {
+    try { conn.send(payload); } catch(e) {}
+  });
+}
+
+function sendToHost(msg){
+  if (net.role !== 'guest') return;
+  const conn = net.conns.host;
+  if (!conn) return;
+  try { conn.send(msg); } catch(e) {}
+}
+
+function joinAttempt(code, name, token){
+  net.role = 'guest';
+  const guestId = 'guest-' + Math.random().toString(36).substring(2, 8);
+  $('join-status').textContent = 'Connecting...';
+  try {
+    net.peer = new Peer(`nas-monopoly-${code}-${guestId}`);
+  } catch(e) {
+    $('join-status').textContent = 'PeerJS unavailable.';
+    return;
+  }
+  net.peer.on('open', () => {
+    const conn = net.peer.connect(`nas-monopoly-${code}`);
+    net.conns.host = conn;
+    conn.on('open', () => {
+      $('join-status').textContent = 'Connected. Joining lobby...';
+      conn.send({ type: 'JOIN_REQUEST', playerName: name, tokenChoice: token });
+    });
+    conn.on('data', data => onGuestReceive(data));
+    conn.on('close', () => {
+      $('join-status').textContent = 'Disconnected from host';
+      showToast('Host disconnected');
+    });
+    conn.on('error', err => {
+      $('join-status').textContent = `Connection error: ${err.type || 'unknown'}`;
+    });
+  });
+  net.peer.on('error', err => {
+    $('join-status').textContent = `Error: ${err.type || 'unknown'}`;
+  });
+}
+
+function onGuestReceive(msg){
+  if (msg.type === 'JOIN_REJECTED') {
+    $('join-status').textContent = `Rejected: ${msg.reason}`;
+    return;
+  }
+  if (msg.type === 'JOIN_ACCEPTED') {
+    net.myId = msg.yourPlayerId;
+    gameState = msg.state;
+    $('join-status').textContent = `Joined! Waiting for host to start...`;
+    return;
+  }
+  if (msg.type === 'STATE_UPDATE') {
+    const wasLobby = !gameState || gameState.status === 'lobby';
+    gameState = msg.state;
+    if (gameState.status === 'playing' && wasLobby) {
+      showScreen('screen-game');
+      renderBoard();
+      $('room-badge').classList.remove('hidden');
+      $('room-badge-code').textContent = gameState.roomCode;
+    }
+    if (gameState.status === 'ended') {
+      endGameViewOnly();
+    }
+    renderAll();
+    /* If host shows a property modal that I need to act on, surface it */
+    maybeShowGuestModal();
+    return;
+  }
+}
+
+function maybeShowGuestModal(){
+  /* If the current player is me and I'm pending on a property purchase, open the modal */
+  if (net.role !== 'guest') return;
+  if (!gameState || gameState.status !== 'playing') return;
+  const cp = currentPlayer();
+  if (!cp || cp.id !== net.myId) return;
+  const tile = TILE_DATA[cp.tileIndex];
+  if (pendingLanding && ['property','station','utility'].includes(tile.type)) {
+    const prop = gameState.properties[cp.tileIndex];
+    if (prop && prop.ownerId === null) openPropertyModal(cp.tileIndex);
+  }
+  /* Cards are handled separately via activeCard */
+  if (gameState.activeCard) {
+    const card = findCard(gameState.activeCard.cardId);
+    if (card) showCardModal(card, gameState.activeCard.deck);
+  }
+}
+
+function endGameViewOnly(){
+  /* Used when guests receive an ended state */
+  const ranked = [...gameState.players].sort((a,b) => netWorth(b) - netWorth(a));
+  const winner = ranked[0];
+  $('win-name').textContent = `${winner.token} ${winner.name}`;
+  $('win-worth').textContent = `${fmtMoney(netWorth(winner))} net worth`;
+  $('win-ranking').innerHTML = ranked.map((p,i) => `
+    <div class="ranking-row">
+      <span>${i+1}. ${p.token} ${escapeHTML(p.name)}${p.isBankrupt ? ' (bankrupt)' : ''}</span>
+      <strong>${fmtMoney(netWorth(p))}</strong>
+    </div>
+  `).join('');
+  renderConfetti();
+  showScreen('screen-win');
+}
+
+function startMultiplayerGame(){
+  if (gameState.players.length < 2) return;
+  gameState.status = 'playing';
+  logEvent(`<span class="system">— Game started! Multiplayer mode —</span>`, 'system');
+  logEvent(`<span class="turn">— ${escapeHTML(currentPlayer().name)}'s turn —</span>`, 'system');
+  showScreen('screen-game');
+  renderBoard();
+  $('room-badge').classList.remove('hidden');
+  $('room-badge-code').textContent = gameState.roomCode;
+  renderAll();
+  broadcastState();
+}
+
+/* ============================================================ */
+/* PERSISTENCE                                                  */
+/* ============================================================ */
+
+function saveState(){
+  if (!gameState) return;
+  if (net.role === 'guest') return;
+  try {
+    localStorage.setItem('nasMonopolyGame', JSON.stringify({
+      state: gameState,
+      role: net.role,
+      myId: net.myId,
+      savedAt: Date.now()
+    }));
+  } catch(e) {}
+}
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem('nasMonopolyGame');
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
+function clearState(){
+  try { localStorage.removeItem('nasMonopolyGame'); } catch(e) {}
+}
+
+function offerContinue(){
+  const saved = loadState();
+  if (saved && saved.state && saved.state.status === 'playing') {
+    $('btn-continue').classList.remove('hidden');
+    $('btn-continue').onclick = () => {
+      gameState = saved.state;
+      net.role = saved.role;
+      net.myId = saved.myId;
+      if (gameState.mode === 'multiplayer') {
+        /* Multiplayer continuation requires re-connection — for v1, fall back to pass-and-play view */
+        showToast('Resumed (multiplayer connections need re-host)');
+      }
+      showScreen('screen-game');
+      renderBoard();
+      if (gameState.mode === 'multiplayer') {
+        $('room-badge').classList.remove('hidden');
+        $('room-badge-code').textContent = gameState.roomCode || '——';
+      }
+      renderAll();
+    };
+  }
+}
+
+/* ============================================================ */
+/* EVENT BINDINGS                                               */
+/* ============================================================ */
+
+function bind(){
+  /* Start screen mount */
+  $('start-logo-mount').innerHTML = CROWN_SVG;
+
+  $('btn-pap').onclick = () => {
+    showScreen('screen-pap-setup');
+    renderPapSetup();
+  };
+  $('btn-host').onclick = () => {
+    showScreen('screen-host');
+    hostStartLobby();
+  };
+  $('btn-join').onclick = () => {
+    showScreen('screen-join');
+    $('join-code-input').value = '';
+    $('join-name-area').classList.add('hidden');
+    $('join-status').textContent = '';
+    /* Pre-fill from ?join= */
+    const params = new URLSearchParams(location.search);
+    if (params.get('join')) $('join-code-input').value = params.get('join').toUpperCase();
+  };
+
+  $('btn-pap-back').onclick = () => showScreen('screen-start');
+  $('btn-host-back').onclick = () => {
+    if (net.peer) { try { net.peer.destroy(); } catch(e){} net.peer = null; }
+    gameState = null;
+    showScreen('screen-start');
+  };
+  $('btn-join-back').onclick = () => {
+    if (net.peer) { try { net.peer.destroy(); } catch(e){} net.peer = null; }
+    gameState = null;
+    showScreen('screen-start');
+  };
+
+  $('btn-add-player').onclick = () => {
+    if (papPlayers.length >= 6) return;
+    const usedTokens = new Set(papPlayers.map(p => p.token));
+    const freeToken = ALL_TOKENS.find(t => !usedTokens.has(t));
+    papPlayers.push({ name: `Player ${papPlayers.length+1}`, token: freeToken });
+    renderPapSetup();
+  };
+  $('btn-remove-player').onclick = () => {
+    if (papPlayers.length <= 2) return;
+    papPlayers.pop();
+    renderPapSetup();
+  };
+  $('btn-pap-start').onclick = () => {
+    /* Make sure all tokens are unique */
+    const used = new Set();
+    for (const p of papPlayers) {
+      if (used.has(p.token)) { showToast('Each player needs a unique token'); return; }
+      used.add(p.token);
+      if (!p.name.trim()) { showToast('Each player needs a name'); return; }
+    }
+    startPassAndPlay(papPlayers.map(p => ({ name: p.name.trim(), token: p.token })));
+  };
+
+  $('btn-host-start').onclick = () => {
+    if (!gameState || gameState.players.length < 2) return;
+    startMultiplayerGame();
+  };
+
+  $('btn-join-confirm').onclick = () => {
+    const code = $('join-code-input').value.toUpperCase().trim();
+    if (code.length < 4) { showToast('Enter a valid room code'); return; }
+    if ($('join-name-area').classList.contains('hidden')) {
+      $('join-name-area').classList.remove('hidden');
+      const initialToken = ALL_TOKENS[0];
+      renderTokenPicker('join-token-picker', initialToken, (tk) => {
+        renderTokenPicker('join-token-picker', tk);
+        $('join-token-picker').dataset.selected = tk;
+      });
+      $('join-token-picker').dataset.selected = initialToken;
+      $('btn-join-confirm').textContent = 'JOIN GAME →';
+    } else {
+      const name = $('join-name').value || 'Player';
+      const token = $('join-token-picker').dataset.selected || ALL_TOKENS[0];
+      joinAttempt(code, name, token);
+    }
+  };
+
+  $('btn-end-game').onclick = () => {
+    if (gameState && gameState.status === 'playing') {
+      if (gameState.mode === 'pass-and-play' || net.role === 'host') {
+        if (confirm('End game now and rank by net worth?')) endGame();
+      }
+    }
+  };
+  $('btn-quit').onclick = () => {
+    if (confirm('Quit and return to start?')) {
+      if (net.peer) { try { net.peer.destroy(); } catch(e){} net.peer = null; }
+      net = { peer: null, conns: {}, role: null, hostId: null, myId: null };
+      gameState = null;
+      clearState();
+      showScreen('screen-start');
+    }
+  };
+
+  $('btn-win-new').onclick = () => { clearState(); gameState = null; showScreen('screen-start'); };
+  $('btn-win-home').onclick = () => { clearState(); gameState = null; showScreen('screen-start'); };
+  $('info-ok').onclick = () => closeModal('modal-info');
+
+  /* Room badge click — show players */
+  $('room-badge').onclick = () => {
+    if (!gameState) return;
+    $('info-title').textContent = `Room ${gameState.roomCode}`;
+    $('info-text').textContent = gameState.players.map(p => `${p.token} ${p.name}${p.isConnected===false ? ' (offline)' : ''}`).join(' · ');
+    showModal('modal-info');
+  };
+}
+
+/* ============================================================ */
+/* INIT                                                          */
+/* ============================================================ */
+
+window.addEventListener('DOMContentLoaded', () => {
+  bind();
+  offerContinue();
+});
+
+/* Expose a tiny harness for headless smoke tests. */
+window.__NAS = {
+  startPassAndPlay,
+  gameState: () => gameState,
+  rollAndStep: () => doRoll(),
+  TILE_DATA, ZONES
+};
+</script>
+</body>
+</html>
