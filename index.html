@@ -489,9 +489,9 @@
      word boundaries — never mid-word — so "Basketball Court" wraps as
      Basketball / Court, not Basketba / ll Court. */
   .tile .nm.nm-prop {
-    font-size: clamp(8px, 0.78vw, 11px);
-    line-height: 1.12;
-    padding: 4px 2px 0;
+    font-size: clamp(7px, 0.66vw, 9.5px);
+    line-height: 1.1;
+    padding: 3px 1px 0;
     word-break: keep-all;
     overflow-wrap: normal;
     hyphens: none;
@@ -665,16 +665,6 @@
       repeating-linear-gradient(-45deg, transparent 0 28px, rgba(232, 184, 75, 0.025) 28px 29px);
     pointer-events: none;
   }
-  .center::after {
-    content: '';
-    position: absolute;
-    top: 6%; right: 6%;
-    width: clamp(40px, 5vw, 80px); height: clamp(40px, 5vw, 80px);
-    border: 2px solid var(--nas-teal);
-    border-radius: 50%;
-    opacity: 0.25;
-  }
-
   .nas-logo {
     width: clamp(90px, 18vw, 200px);
     height: clamp(75px, 15vw, 170px);
