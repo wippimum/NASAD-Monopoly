@@ -3,7 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Monopoly: NAS Abu Dhabi Edition</title>
+<title>NAS Abu Dhabi Monopoly — The Nord Anglia Edition</title>
+<meta name="description" content="A Nord Anglia Abu Dhabi school-themed Monopoly board game — play pass-and-play on one device or online with friends. Made by NAS students.">
+<meta name="theme-color" content="#0E2A47">
+
+<!-- Icons / add-to-home-screen -->
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 200'%3E%3Crect width='240' height='200' fill='%230E2A47'/%3E%3Cg fill='%23fff'%3E%3Cpath d='M120 22 C115 36 111 50 114 62 C116 70 124 70 126 62 C129 50 125 36 120 22 Z'/%3E%3Cpath d='M50 82 Q120 78 190 82 L188 92 Q120 88 52 92 Z'/%3E%3Cpath d='M40 102 Q60 98 90 106 Q110 112 120 118 Q130 112 150 106 Q180 98 200 102 L200 108 Q180 104 150 112 Q130 118 120 124 Q110 118 90 112 Q60 104 40 108 Z'/%3E%3Cpath d='M40 114 Q60 110 90 118 Q110 124 120 130 Q130 124 150 118 Q180 110 200 114 L200 148 Q180 144 150 152 Q130 158 120 162 Q110 158 90 152 Q60 144 40 148 Z'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NAS Monopoly">
+<link rel="manifest" href="/site.webmanifest">
+
+<!-- Social share preview (Open Graph + Twitter) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NAS Abu Dhabi Monopoly">
+<meta property="og:title" content="NAS Abu Dhabi Monopoly — The Nord Anglia Edition">
+<meta property="og:description" content="Play the NAS Abu Dhabi school Monopoly — pass-and-play on one device or online with friends. Tap to play!">
+<meta property="og:url" content="https://www.nasadmonopoly.com/">
+<meta property="og:image" content="https://www.nasadmonopoly.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NAS Abu Dhabi Monopoly — The Nord Anglia Edition">
+<meta name="twitter:description" content="Play the NAS Abu Dhabi school Monopoly — pass-and-play or online. Tap to play!">
+<meta name="twitter:image" content="https://www.nasadmonopoly.com/og-image.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
@@ -202,6 +228,64 @@
   .rule-block ul { margin: 0; padding-left: 20px; }
   .rule-block li { color: var(--nas-navy); font-size: 14px; line-height: 1.5; margin-bottom: 5px; }
   .rule-block strong { color: var(--nas-navy); font-weight: 700; }
+
+  /* In-game rules modal + small header icon button */
+  .btn.icon-btn { padding: 8px 10px; }
+  #modal-rules .modal.rules-modal {
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    max-height: min(86vh, 720px);
+  }
+  .rules-modal-title {
+    font-family: 'Bungee', cursive;
+    color: var(--nas-navy);
+    font-size: clamp(18px, 3vw, 26px);
+    text-align: center;
+    padding: 16px 16px 8px;
+    margin: 0;
+  }
+  #modal-rules .rules-body {
+    padding: 4px 16px 12px;
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* Trade modal */
+  #modal-trade .modal.trade-modal, #modal-trade-review .modal.trade-modal {
+    max-width: 640px; display: flex; flex-direction: column; max-height: min(88vh, 760px);
+  }
+  .trade-body { padding: 6px 16px 12px; min-height: 0; flex: 1; overflow-y: auto; text-align: left; }
+  .trade-partners { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 12px; }
+  .trade-partner {
+    padding: 8px 12px; border: 2px solid var(--nas-navy); border-radius: 12px;
+    background: var(--cream); cursor: pointer; font-weight: 600; color: var(--nas-navy);
+    font-family: 'Fredoka', sans-serif; font-size: 13px;
+  }
+  .trade-partner.sel { background: var(--nas-teal); color: #fff; }
+  .trade-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .trade-cols { grid-template-columns: 1fr; } }
+  .trade-col h4 {
+    font-family: 'Bungee', cursive; font-size: 13px; color: var(--nas-navy);
+    margin: 0 0 8px; text-align: center;
+  }
+  .trade-chip {
+    display: flex; align-items: center; gap: 6px; padding: 6px 8px; margin-bottom: 6px;
+    border: 2px solid rgba(14,42,71,0.25); border-radius: 10px; cursor: pointer;
+    font-size: 12.5px; color: var(--nas-navy); background: #fff; font-weight: 500;
+  }
+  .trade-chip.sel { border-color: var(--nas-teal); background: rgba(43,182,176,0.14); }
+  .trade-chip .dot { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
+  .trade-money { margin-top: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 13px; }
+  .trade-money input {
+    width: 90px; padding: 6px 8px; border: 2px solid var(--nas-navy); border-radius: 8px;
+    font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--nas-navy); text-align: center;
+  }
+  .trade-summary { text-align: center; font-size: 14px; color: var(--nas-navy); line-height: 1.6; }
+  .trade-summary .give { color: var(--danger); font-weight: 600; }
+  .trade-summary .get { color: var(--nas-teal); font-weight: 700; }
+  .trade-empty { text-align: center; color: var(--nas-navy); opacity: 0.6; font-size: 13px; padding: 10px; }
 
   .player-card {
     background: var(--warm-white);
@@ -523,7 +607,10 @@
     font-weight: 700;
     white-space: nowrap;
   }
-  .tile .ic { font-size: clamp(14px, 1.6vw, 22px); }
+  .tile .ic { font-size: clamp(10px, 1.2vw, 16px); line-height: 1; }
+  /* Card/tax/station/utility names may use two lines on top & bottom rows. */
+  .tile.bottom .nm, .tile.top .nm { line-height: 1.0; }
+  .tile.bottom .tile-body, .tile.top .tile-body { padding: 2px 2px; }
 
   .tile.premium .nm { color: var(--nas-navy); font-weight: 700; }
 
@@ -933,6 +1020,8 @@
     line-height: 1.45;
   }
   .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  #pd-build-area { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+  .btn.navy { background: linear-gradient(135deg, var(--nas-navy) 0%, var(--nas-navy-deep) 100%); color: var(--cream); }
   .rent-preview {
     background: var(--cream);
     border: 1px dashed var(--nas-navy);
@@ -1288,6 +1377,8 @@
     <h1>🎲 Monopoly · NAS Abu Dhabi</h1>
     <div class="header-right">
       <div class="room-badge hidden" id="room-badge">Room <span class="code" id="room-badge-code"></span></div>
+      <button class="btn small outline icon-btn" id="btn-sound" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+      <button class="btn small outline" id="btn-rules-ingame">📖 Rules</button>
       <button class="btn small outline" id="btn-end-game">END GAME</button>
       <button class="btn small danger" id="btn-quit">✕ QUIT</button>
     </div>
@@ -1397,6 +1488,55 @@
         <button class="btn outline small" id="pd-close">CLOSE</button>
         <button class="btn small hidden" id="pd-build">BUILD HOUSE</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- In-game Rules (reuses the rules content) -->
+<div class="modal-backdrop" id="modal-rules">
+  <div class="modal rules-modal">
+    <h2 class="rules-modal-title">How to Play</h2>
+    <div class="rules-body" id="rules-modal-body"></div>
+    <div style="padding:12px; display:flex; justify-content:center; border-top:1px solid rgba(14,42,71,0.12);">
+      <button class="btn small" id="btn-rules-modal-close">GOT IT</button>
+    </div>
+  </div>
+</div>
+
+<!-- Trade builder -->
+<div class="modal-backdrop" id="modal-trade">
+  <div class="modal trade-modal">
+    <h2 class="rules-modal-title">🤝 Propose a Trade</h2>
+    <div class="trade-body" id="trade-builder"></div>
+    <div style="padding:12px; display:flex; gap:10px; justify-content:center; border-top:1px solid rgba(14,42,71,0.12);">
+      <button class="btn small outline" id="btn-trade-cancel">CANCEL</button>
+      <button class="btn small" id="btn-trade-propose">PROPOSE →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Trade review (for the partner) -->
+<div class="modal-backdrop" id="modal-trade-review">
+  <div class="modal trade-modal">
+    <h2 class="rules-modal-title" id="trade-review-title">🤝 Trade Offer</h2>
+    <div class="trade-body" id="trade-review-body"></div>
+    <div style="padding:12px; display:flex; gap:10px; justify-content:center; border-top:1px solid rgba(14,42,71,0.12);">
+      <button class="btn small danger" id="btn-trade-decline">DECLINE</button>
+      <button class="btn small" id="btn-trade-accept">ACCEPT ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Auction -->
+<div class="modal-backdrop" id="modal-auction">
+  <div class="modal">
+    <div class="modal-strip" id="auction-strip"></div>
+    <div class="modal-body">
+      <h2 id="auction-name">—</h2>
+      <p class="desc">Nobody bought it — up for auction!</p>
+      <div class="price-line" id="auction-high">No bids yet</div>
+      <div id="auction-turn" style="font-weight:600;color:var(--nas-navy);margin:6px 0 12px;"></div>
+      <div id="auction-controls"></div>
     </div>
   </div>
 </div>
@@ -1600,6 +1740,8 @@ function freshGameState(mode){
     properties: {},
     chanceDeck: shuffleDeck(CHANCE_CARDS.map(c => c.id)),
     toddleDeck: shuffleDeck(TODDLE_CARDS.map(c => c.id)),
+    pendingTrade: null,
+    auction: null,
     log: []
   };
 }
@@ -1643,6 +1785,71 @@ function logEvent(text, klass='event'){
   gameState.log.unshift({ text, klass, ts: Date.now() });
   if (gameState.log.length > 80) gameState.log.length = 80;
   renderLog();
+}
+
+/* ============================================================ */
+/* SOUND — tiny WebAudio synth, no asset files. Muteable.       */
+/* ============================================================ */
+const Sound = {
+  ctx: null,
+  muted: (localStorage.getItem('nas_muted') === '1'),
+  ensure(){
+    if (this.muted) return null;
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return null; } }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    return this.ctx;
+  },
+  tone(freq, start, dur, { type='sine', gain=0.18, glideTo=null } = {}){
+    const ctx = this.ctx; if (!ctx) return;
+    const t0 = ctx.currentTime + start;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t0);
+    if (glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gain, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  },
+  noise(start, dur, gain=0.12){
+    const ctx = this.ctx; if (!ctx) return;
+    const t0 = ctx.currentTime + start;
+    const n = Math.floor(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i=0;i<n;i++) data[i] = (Math.random()*2-1) * (1 - i/n);
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const g = ctx.createGain(); g.gain.setValueAtTime(gain, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    src.connect(g); g.connect(ctx.destination); src.start(t0);
+  },
+  play(name){
+    if (!this.ensure()) return;
+    switch(name){
+      case 'dice':  this.noise(0,0.06,0.10); this.noise(0.08,0.05,0.08); this.noise(0.15,0.05,0.07); break;
+      case 'coin':  this.tone(880,0,0.09,{type:'triangle',gain:0.2}); this.tone(1320,0.09,0.14,{type:'triangle',gain:0.2}); break;
+      case 'buy':   this.tone(523,0,0.1,{type:'triangle',gain:0.2}); this.tone(784,0.1,0.16,{type:'triangle',gain:0.2}); break;
+      case 'build': this.tone(660,0,0.07,{type:'square',gain:0.12}); this.tone(990,0.06,0.09,{type:'square',gain:0.12}); break;
+      case 'buzzer':this.tone(200,0,0.32,{type:'sawtooth',gain:0.16,glideTo:90}); break;
+      case 'card':  this.tone(300,0,0.18,{type:'sine',gain:0.14,glideTo:700}); break;
+      case 'move':  this.tone(440,0,0.04,{type:'sine',gain:0.06}); break;
+      case 'click': this.tone(520,0,0.03,{type:'square',gain:0.06}); break;
+      case 'win':   [523,659,784,1047].forEach((f,i)=>this.tone(f,i*0.12,0.22,{type:'triangle',gain:0.22})); break;
+      case 'trade': this.tone(587,0,0.1,{type:'triangle',gain:0.18}); this.tone(880,0.1,0.14,{type:'triangle',gain:0.18}); break;
+    }
+  },
+  toggle(){
+    this.muted = !this.muted;
+    localStorage.setItem('nas_muted', this.muted ? '1' : '0');
+    if (!this.muted) this.play('click');
+    updateSoundButton();
+    return this.muted;
+  }
+};
+function sfx(name){ try { Sound.play(name); } catch(e){} }
+function updateSoundButton(){
+  const b = $('btn-sound'); if (!b) return;
+  b.textContent = Sound.muted ? '🔇' : '🔊';
+  b.classList.toggle('outline', true);
 }
 
 function tileGridPosition(idx){
@@ -1694,6 +1901,7 @@ function calcRent(tileIdx, diceTotal){
   const t = TILE_DATA[tileIdx];
   const p = gameState.properties[tileIdx];
   if (!p || p.ownerId === null) return 0;
+  if (p.mortgaged) return 0;
   if (t.type === 'station') {
     const count = playerStationCount(p.ownerId);
     return STATION_RENTS[count] || 0;
@@ -2108,6 +2316,15 @@ function renderTurnActions(){
       endBtn.onclick = () => requestAction({ type: 'END_TURN' });
       wrap.appendChild(endBtn);
     }
+    /* Trade any time on your turn (if there's another player to deal with). */
+    if (gameState.players.filter(p => !p.isBankrupt).length > 1) {
+      const tradeBtn = document.createElement('button');
+      tradeBtn.className = 'btn small navy';
+      tradeBtn.style.marginTop = '8px';
+      tradeBtn.textContent = '🤝 Propose a Trade';
+      tradeBtn.onclick = () => openTradeModal();
+      wrap.appendChild(tradeBtn);
+    }
   } else {
     const wait = document.createElement('div');
     wait.style.cssText = 'text-align:center;padding:10px;color:var(--nas-navy);opacity:0.6;font-weight:600;';
@@ -2131,6 +2348,8 @@ function renderAll(){
   renderTurnPanel();
   renderLog();
   updateYourTurnBanner();
+  syncTradeReview();
+  syncAuctionUI();
   saveState();
 }
 
@@ -2174,18 +2393,26 @@ function requestAction(msg){
 function handleAction(playerId, msg){
   if (!gameState || gameState.status !== 'playing') return;
   const cp = currentPlayer();
+  const anyPlayerActions = ['CARD_ACKNOWLEDGED','RESPOND_TRADE','AUCTION_BID','AUCTION_PASS'];
   if (!cp || cp.id !== playerId) {
-    /* not their turn — silently drop except for CARD_ACKNOWLEDGED which has no actor */
-    if (msg.type !== 'CARD_ACKNOWLEDGED') return;
+    /* not their turn — silently drop except actions that any player may send */
+    if (!anyPlayerActions.includes(msg.type)) return;
   }
   switch (msg.type) {
     case 'ROLL_DICE':           doRoll(); break;
     case 'BUY_PROPERTY':        doBuyProperty(msg.tileIndex); break;
     case 'SKIP_PROPERTY':       doSkipProperty(); break;
     case 'BUILD_HOUSE':         doBuildHouse(msg.tileIndex); break;
+    case 'SELL_HOUSE':          doSellHouse(msg.tileIndex); break;
+    case 'MORTGAGE':            doMortgage(msg.tileIndex); break;
+    case 'UNMORTGAGE':          doUnmortgage(msg.tileIndex); break;
     case 'PAY_JAIL_FINE':       doPayJailFine(); break;
     case 'END_TURN':            doEndTurn(); break;
     case 'CARD_ACKNOWLEDGED':   doCardAck(); break;
+    case 'PROPOSE_TRADE':       doProposeTrade(msg.trade); break;
+    case 'RESPOND_TRADE':       doRespondTrade(playerId, msg.accept); break;
+    case 'AUCTION_BID':         doAuctionBid(msg.bidderId, msg.amount); break;
+    case 'AUCTION_PASS':        doAuctionPass(msg.bidderId); break;
   }
   broadcastState();
   renderAll();
@@ -2208,6 +2435,7 @@ function doRoll(){
   const isDoubles = d1 === d2;
 
   animateBigDice(d1, d2);
+  sfx('dice');
 
   logEvent(`<span class="turn">${escapeHTML(player.name)}</span> rolled ${d1}+${d2} = ${total}${isDoubles ? ' (doubles!)' : ''}`, 'turn');
 
@@ -2268,9 +2496,11 @@ function beginMovement(steps){
     }
     const old = player.tileIndex;
     player.tileIndex = (player.tileIndex + 1) % 40;
+    sfx('move');
     if (old > player.tileIndex) {
       /* Passed GO */
       player.money += PASS_GO_BONUS;
+      sfx('coin');
       logEvent(`<span class="event">→ ${escapeHTML(player.name)} passed GO, collected ${PASS_GO_BONUS} ⭐</span>`);
     }
     renderTokensOnBoard();
@@ -2450,6 +2680,7 @@ function payRent(player, owner, rent, tile){
   if (player.money >= rent) {
     player.money -= rent;
     owner.money += rent;
+    sfx('coin');
     logEvent(`<span class="toddle">→ ${escapeHTML(player.name)} paid ${rent} ⭐ rent to ${escapeHTML(owner.name)}</span>`);
     pendingLanding = false;
     broadcastState();
@@ -2468,14 +2699,108 @@ function doBuyProperty(tileIdx){
   player.properties.push(tileIdx);
   if (!gameState.properties[tileIdx]) gameState.properties[tileIdx] = { ownerId: null, houses: 0, hasHotel: false };
   gameState.properties[tileIdx].ownerId = player.id;
+  sfx('buy');
   logEvent(`<span class="event">→ ${escapeHTML(player.name)} bought ${escapeHTML(tile.name)} for ${tile.price} ⭐</span>`);
   pendingLanding = false;
   closeModal('modal-property');
 }
 
 function doSkipProperty(){
-  pendingLanding = false;
   closeModal('modal-property');
+  /* Declined to buy → the space goes to auction (official Monopoly rule). */
+  startAuction(currentPlayer().tileIndex);
+}
+
+/* ============================================================ */
+/* AUCTIONS                                                     */
+/* ============================================================ */
+function startAuction(tileIndex){
+  const bidderIds = gameState.players.filter(p => !p.isBankrupt).map(p => p.id);
+  if (!bidderIds.length) { pendingLanding = false; return; }
+  gameState.auction = { tileIndex, bidderIds, passed: [], turn: 0, highBid: 0, highBidder: null };
+  advanceAuctionToActive();
+}
+function auctionActive(){
+  const a = gameState.auction;
+  return a.bidderIds.filter(id => !a.passed.includes(id));
+}
+function advanceAuctionToActive(){
+  const a = gameState.auction;
+  if (auctionActive().length <= (a.highBidder ? 1 : 0)) { resolveAuction(); return; }
+  /* move turn pointer to next active bidder */
+  for (let n = 0; n < a.bidderIds.length; n++) {
+    a.turn = a.turn % a.bidderIds.length;
+    if (!a.passed.includes(a.bidderIds[a.turn])) return;
+    a.turn++;
+  }
+  resolveAuction();
+}
+function doAuctionBid(bidderId, amount){
+  const a = gameState.auction; if (!a) return;
+  if (a.bidderIds[a.turn] !== bidderId) return;
+  const bidder = gameState.players.find(p => p.id === bidderId);
+  amount = parseInt(amount) || 0;
+  if (amount <= a.highBid || amount > bidder.money) { showToast('Bid must be higher and affordable'); return; }
+  a.highBid = amount; a.highBidder = bidderId;
+  sfx('build');
+  a.turn++;
+  advanceAuctionToActive();
+}
+function doAuctionPass(bidderId){
+  const a = gameState.auction; if (!a) return;
+  if (a.bidderIds[a.turn] !== bidderId) return;
+  a.passed.push(bidderId);
+  a.turn++;
+  advanceAuctionToActive();
+}
+function resolveAuction(){
+  const a = gameState.auction; if (!a) return;
+  const tile = TILE_DATA[a.tileIndex];
+  if (a.highBidder && a.highBid > 0) {
+    const winner = gameState.players.find(p => p.id === a.highBidder);
+    winner.money -= a.highBid;
+    if (!winner.properties.includes(a.tileIndex)) winner.properties.push(a.tileIndex);
+    if (!gameState.properties[a.tileIndex]) gameState.properties[a.tileIndex] = { ownerId: null, houses: 0, hasHotel: false };
+    gameState.properties[a.tileIndex].ownerId = winner.id;
+    sfx('buy');
+    logEvent(`<span class="event">→ ${escapeHTML(winner.name)} won ${escapeHTML(tile.name)} at auction for ${a.highBid} ⭐</span>`);
+  } else {
+    logEvent(`<span class="event">→ No bids — ${escapeHTML(tile.name)} stays unowned</span>`);
+  }
+  gameState.auction = null;
+  pendingLanding = false;
+}
+
+function syncAuctionUI(){
+  const a = gameState && gameState.auction;
+  if (!a) { closeModal('modal-auction'); return; }
+  const tile = TILE_DATA[a.tileIndex];
+  $('auction-strip').style.background = tile.zone ? ZONES[tile.zone].color : 'var(--nas-navy)';
+  $('auction-name').textContent = tile.name;
+  const hb = a.highBidder ? gameState.players.find(p => p.id === a.highBidder) : null;
+  $('auction-high').textContent = hb ? `High bid: ${a.highBid} ⭐ (${hb.name})` : 'No bids yet';
+  const bidder = gameState.players.find(p => p.id === a.bidderIds[a.turn]);
+  const controls = $('auction-controls');
+  const canControl = gameState.mode === 'pass-and-play' || net.myId === bidder.id;
+  $('auction-turn').textContent = `${bidder.token} ${bidder.name}'s turn to bid (has ${bidder.money} ⭐)`;
+  if (canControl) {
+    const min = a.highBid + 1;
+    controls.innerHTML = `
+      <div class="trade-money" style="justify-content:center;margin-bottom:10px;">💰
+        <input type="number" id="auction-amount" min="${min}" value="${Math.min(bidder.money, min)}"> ⭐</div>
+      <div class="modal-actions">
+        <button class="btn small outline" id="auction-pass">PASS</button>
+        <button class="btn small" id="auction-bid">BID</button>
+      </div>`;
+    $('auction-bid').onclick = () => {
+      const amt = parseInt($('auction-amount').value) || 0;
+      requestAction({ type: 'AUCTION_BID', bidderId: bidder.id, amount: amt });
+    };
+    $('auction-pass').onclick = () => requestAction({ type: 'AUCTION_PASS', bidderId: bidder.id });
+  } else {
+    controls.innerHTML = `<div style="text-align:center;color:var(--nas-navy);opacity:0.6;font-weight:600;">Waiting for ${escapeHTML(bidder.name)}…</div>`;
+  }
+  showModal('modal-auction');
 }
 
 function doBuildHouse(tileIdx){
@@ -2501,6 +2826,7 @@ function doBuildHouse(tileIdx){
     return;
   }
   player.money -= tile.houseCost;
+  sfx('build');
   if (prop.houses === 4) {
     prop.houses = 0;
     prop.hasHotel = true;
@@ -2509,6 +2835,67 @@ function doBuildHouse(tileIdx){
     prop.houses += 1;
     logEvent(`<span class="event">→ ${escapeHTML(player.name)} built a house on ${escapeHTML(tile.name)} (${prop.houses})</span>`);
   }
+}
+
+function mortgageValue(tileIdx){ return Math.floor(TILE_DATA[tileIdx].price / 2); }
+function unmortgageCost(tileIdx){ return Math.ceil(mortgageValue(tileIdx) * 1.1); }
+function zoneMaxHouses(zone){
+  return Math.max(...ZONES[zone].tiles.map(t => {
+    const pp = gameState.properties[t];
+    if (pp && pp.hasHotel) return 5;
+    return pp ? (pp.houses || 0) : 0;
+  }));
+}
+
+function doSellHouse(tileIdx){
+  const player = currentPlayer();
+  const tile = TILE_DATA[tileIdx];
+  const prop = gameState.properties[tileIdx];
+  if (!prop || prop.ownerId !== player.id || tile.type !== 'property') return;
+  const refund = Math.floor(tile.houseCost / 2);
+  if (prop.hasHotel) {
+    prop.hasHotel = false;
+    prop.houses = 4;
+    player.money += refund;
+    sfx('build');
+    logEvent(`<span class="event">→ ${escapeHTML(player.name)} sold the hotel on ${escapeHTML(tile.name)} (+${refund} ⭐)</span>`);
+    return;
+  }
+  if (prop.houses > 0) {
+    /* Sell evenly: only from the most-developed property in the zone */
+    if (prop.houses < zoneMaxHouses(tile.zone)) { showToast('Sell evenly — from the most-built first'); return; }
+    prop.houses -= 1;
+    player.money += refund;
+    sfx('build');
+    logEvent(`<span class="event">→ ${escapeHTML(player.name)} sold a house on ${escapeHTML(tile.name)} (+${refund} ⭐)</span>`);
+  }
+}
+
+function doMortgage(tileIdx){
+  const player = currentPlayer();
+  const tile = TILE_DATA[tileIdx];
+  const prop = gameState.properties[tileIdx];
+  if (!prop || prop.ownerId !== player.id) return;
+  if (prop.mortgaged) return;
+  if (prop.houses > 0 || prop.hasHotel) { showToast('Sell buildings in this zone first'); return; }
+  const val = mortgageValue(tileIdx);
+  prop.mortgaged = true;
+  player.money += val;
+  sfx('coin');
+  logEvent(`<span class="toddle">→ ${escapeHTML(player.name)} mortgaged ${escapeHTML(tile.name)} (+${val} ⭐)</span>`);
+}
+
+function doUnmortgage(tileIdx){
+  const player = currentPlayer();
+  const tile = TILE_DATA[tileIdx];
+  const prop = gameState.properties[tileIdx];
+  if (!prop || prop.ownerId !== player.id || !prop.mortgaged) return;
+  const cost = unmortgageCost(tileIdx);
+  if (player.money < cost) { showToast('Not enough money'); return; }
+  player.money -= cost;
+  prop.mortgaged = false;
+  sfx('build');
+  logEvent(`<span class="event">→ ${escapeHTML(player.name)} lifted the mortgage on ${escapeHTML(tile.name)} (−${cost} ⭐)</span>`);
 }
 
 function doPayJailFine(){
@@ -2522,6 +2909,7 @@ function doPayJailFine(){
 }
 
 function sendToJail(player){
+  sfx('buzzer');
   player.tileIndex = 10;
   player.inJail = true;
   player.jailTurnsRemaining = 3;
@@ -2674,6 +3062,8 @@ function showCardModal(card, deckKind){
   else if (eff.type === 'pay') { fx.textContent = `−${eff.amount} ⭐`; fx.classList.add('negative'); }
   else if (eff.type === 'collect-from-each') { fx.textContent = `+${eff.amount} ⭐ × each`; fx.classList.add('positive'); }
   else fx.textContent = '';
+  sfx('card');
+  if (eff.type === 'collect' || eff.type === 'collect-from-each') setTimeout(()=>sfx('coin'), 260);
   $('card-ok').onclick = () => {
     closeModal('modal-card');
     requestAction({ type: 'CARD_ACKNOWLEDGED' });
@@ -2701,27 +3091,57 @@ function openPropertyDetail(tileIdx){
   $('pd-desc').textContent = desc;
   const rents = rentTable(tileIdx);
   $('pd-rent').innerHTML = rents.map(([k,v]) => `<div><span>${k}</span><strong>${v} ⭐</strong></div>`).join('');
+  if (prop && prop.mortgaged) $('pd-desc').textContent += ' · 🚫 Mortgaged';
   const cp = currentPlayer();
   const buildBtn = $('pd-build');
   const buildArea = $('pd-build-area');
   buildArea.innerHTML = '';
+  const isOwner = prop && prop.ownerId === cp.id;
+  const canAct = canCurrentPlayerActOnThisDevice();
+
+  /* BUILD stays as the dedicated primary button */
   if (
-    tile.type === 'property' &&
-    prop && prop.ownerId === cp.id &&
+    tile.type === 'property' && isOwner &&
     getMonopolyOwner(tile.zone) === cp.id &&
-    !prop.hasHotel &&
-    cp.money >= tile.houseCost &&
-    canCurrentPlayerActOnThisDevice()
+    !prop.hasHotel && !prop.mortgaged &&
+    cp.money >= tile.houseCost && canAct
   ) {
     buildBtn.classList.remove('hidden');
     buildBtn.textContent = prop.houses === 4 ? `BUILD HOTEL (${tile.houseCost} ⭐)` : `BUILD HOUSE (${tile.houseCost} ⭐)`;
-    buildBtn.onclick = () => {
-      requestAction({ type: 'BUILD_HOUSE', tileIndex: tileIdx });
-      closeModal('modal-property-detail');
-    };
+    buildBtn.onclick = () => { requestAction({ type: 'BUILD_HOUSE', tileIndex: tileIdx }); closeModal('modal-property-detail'); };
   } else {
     buildBtn.classList.add('hidden');
   }
+
+  /* Manage buttons (sell / mortgage / unmortgage / trade) for the owner */
+  if (isOwner && canAct) {
+    const mkBtn = (label, cls, fn) => {
+      const b = document.createElement('button');
+      b.className = `btn small ${cls}`; b.textContent = label;
+      b.onclick = fn; buildArea.appendChild(b);
+    };
+    if (tile.type === 'property' && (prop.houses > 0 || prop.hasHotel)) {
+      const refund = Math.floor(tile.houseCost / 2);
+      mkBtn(prop.hasHotel ? `SELL HOTEL (+${refund} ⭐)` : `SELL HOUSE (+${refund} ⭐)`, 'outline',
+        () => { requestAction({ type: 'SELL_HOUSE', tileIndex: tileIdx }); openPropertyDetail(tileIdx); });
+    }
+    if (!prop.mortgaged && !prop.hasHotel && prop.houses === 0) {
+      mkBtn(`MORTGAGE (+${mortgageValue(tileIdx)} ⭐)`, 'outline',
+        () => { requestAction({ type: 'MORTGAGE', tileIndex: tileIdx }); openPropertyDetail(tileIdx); });
+    }
+    if (prop.mortgaged) {
+      mkBtn(`UNMORTGAGE (−${unmortgageCost(tileIdx)} ⭐)`, '',
+        () => { requestAction({ type: 'UNMORTGAGE', tileIndex: tileIdx }); openPropertyDetail(tileIdx); });
+    }
+  }
+  /* Trade button — available on your turn if there's another solvent player */
+  if (canAct && gameState.players.filter(p => !p.isBankrupt).length > 1) {
+    const b = document.createElement('button');
+    b.className = 'btn small navy'; b.textContent = '🤝 TRADE';
+    b.onclick = () => { closeModal('modal-property-detail'); openTradeModal(); };
+    buildArea.appendChild(b);
+  }
+
   $('pd-close').onclick = () => closeModal('modal-property-detail');
   showModal('modal-property-detail');
 }
@@ -2729,6 +3149,152 @@ function openPropertyDetail(tileIdx){
 function onTileClick(idx){
   if (!gameState || gameState.status !== 'playing') return;
   openPropertyDetail(idx);
+}
+
+/* ============================================================ */
+/* TRADING                                                      */
+/* ============================================================ */
+let tradeDraft = null;
+
+function tradeableProps(player){
+  return (player.properties || []).filter(idx => {
+    const p = gameState.properties[idx];
+    return p && !p.hasHotel && (p.houses || 0) === 0;
+  });
+}
+
+function propDot(idx){
+  const t = TILE_DATA[idx];
+  return t.zone ? ZONES[t.zone].color : 'var(--nas-navy)';
+}
+
+function openTradeModal(){
+  const me = currentPlayer();
+  const others = gameState.players.filter(p => !p.isBankrupt && p.id !== me.id);
+  if (!others.length) { showToast('No one to trade with'); return; }
+  tradeDraft = { to: others[0].id, give: new Set(), get: new Set(), giveMoney: 0, getMoney: 0 };
+  renderTradeBuilder();
+  showModal('modal-trade');
+}
+
+function renderTradeBuilder(){
+  const me = currentPlayer();
+  const others = gameState.players.filter(p => !p.isBankrupt && p.id !== me.id);
+  const partner = gameState.players.find(p => p.id === tradeDraft.to);
+  const el = $('trade-builder');
+
+  const chip = (idx, sel, side) => {
+    const t = TILE_DATA[idx];
+    const p = gameState.properties[idx];
+    return `<div class="trade-chip ${sel?'sel':''}" data-side="${side}" data-idx="${idx}">
+      <span class="dot" style="background:${propDot(idx)}"></span>
+      <span>${escapeHTML(t.name)}${p && p.mortgaged ? ' 🚫' : ''}</span></div>`;
+  };
+  const myList = tradeableProps(me);
+  const theirList = tradeableProps(partner);
+
+  el.innerHTML = `
+    <div class="trade-partners">
+      ${others.map(o => `<div class="trade-partner ${o.id===tradeDraft.to?'sel':''}" data-pid="${o.id}">${o.token} ${escapeHTML(o.name)}</div>`).join('')}
+    </div>
+    <div class="trade-cols">
+      <div class="trade-col">
+        <h4>You give</h4>
+        ${myList.length ? myList.map(i => chip(i, tradeDraft.give.has(i), 'give')).join('') : '<div class="trade-empty">No tradeable properties</div>'}
+        <div class="trade-money">💰 <input type="number" min="0" id="trade-give-money" value="${tradeDraft.giveMoney}"> ⭐</div>
+      </div>
+      <div class="trade-col">
+        <h4>You get from ${escapeHTML(partner.name)}</h4>
+        ${theirList.length ? theirList.map(i => chip(i, tradeDraft.get.has(i), 'get')).join('') : '<div class="trade-empty">No tradeable properties</div>'}
+        <div class="trade-money">💰 <input type="number" min="0" id="trade-get-money" value="${tradeDraft.getMoney}"> ⭐</div>
+      </div>
+    </div>`;
+
+  el.querySelectorAll('.trade-partner').forEach(b => b.onclick = () => {
+    tradeDraft.to = b.dataset.pid; tradeDraft.get = new Set(); renderTradeBuilder();
+  });
+  el.querySelectorAll('.trade-chip').forEach(c => c.onclick = () => {
+    const idx = +c.dataset.idx, set = c.dataset.side === 'give' ? tradeDraft.give : tradeDraft.get;
+    if (set.has(idx)) set.delete(idx); else set.add(idx);
+    renderTradeBuilder();
+  });
+  const gm = $('trade-give-money'), tm = $('trade-get-money');
+  gm.oninput = () => tradeDraft.giveMoney = Math.max(0, Math.min(me.money, parseInt(gm.value)||0));
+  tm.oninput = () => tradeDraft.getMoney = Math.max(0, Math.min(partner.money, parseInt(tm.value)||0));
+}
+
+function proposeTrade(){
+  const me = currentPlayer();
+  const hasSomething = tradeDraft.give.size || tradeDraft.get.size || tradeDraft.giveMoney || tradeDraft.getMoney;
+  if (!hasSomething) { showToast('Add something to trade'); return; }
+  const trade = {
+    from: me.id, to: tradeDraft.to,
+    giveProps: [...tradeDraft.give], getProps: [...tradeDraft.get],
+    giveMoney: tradeDraft.giveMoney || 0, getMoney: tradeDraft.getMoney || 0
+  };
+  closeModal('modal-trade');
+  requestAction({ type: 'PROPOSE_TRADE', trade });
+}
+
+function doProposeTrade(trade){
+  const from = gameState.players.find(p => p.id === trade.from);
+  const to = gameState.players.find(p => p.id === trade.to);
+  if (!from || !to || from.id !== currentPlayer().id) return;
+  gameState.pendingTrade = trade;
+}
+
+/* Show/hide the review modal based on pendingTrade + which device this is. */
+function syncTradeReview(){
+  const pt = gameState && gameState.pendingTrade;
+  if (!pt) { closeModal('modal-trade-review'); return; }
+  const showHere = gameState.mode === 'pass-and-play' || net.myId === pt.to;
+  if (!showHere) return;
+  const from = gameState.players.find(p => p.id === pt.from);
+  const to = gameState.players.find(p => p.id === pt.to);
+  if (!from || !to) return;
+  const names = arr => arr.length ? arr.map(i => escapeHTML(TILE_DATA[i].name)).join(', ') : '—';
+  $('trade-review-title').textContent = `🤝 ${from.token} ${from.name} offers a trade`;
+  $('trade-review-body').innerHTML = `
+    <div class="trade-summary">
+      <p><strong>${escapeHTML(to.name)}, you receive:</strong><br>
+      <span class="get">${names(pt.giveProps)}${pt.giveMoney ? ` + ${pt.giveMoney} ⭐` : ''}</span></p>
+      <p><strong>You give ${escapeHTML(from.name)}:</strong><br>
+      <span class="give">${names(pt.getProps)}${pt.getMoney ? ` + ${pt.getMoney} ⭐` : ''}</span></p>
+    </div>`;
+  showModal('modal-trade-review');
+}
+
+function doRespondTrade(playerId, accept){
+  const pt = gameState.pendingTrade;
+  if (!pt) return;
+  if (gameState.mode === 'multiplayer' && playerId !== pt.to) return;
+  if (accept) executeTrade(pt);
+  else {
+    logEvent(`<span class="toddle">→ Trade declined</span>`);
+    gameState.pendingTrade = null;
+  }
+}
+
+function executeTrade(trade){
+  const from = gameState.players.find(p => p.id === trade.from);
+  const to = gameState.players.find(p => p.id === trade.to);
+  gameState.pendingTrade = null;
+  if (!from || !to) return;
+  /* Validate money + ownership still holds */
+  if (from.money < trade.giveMoney || to.money < trade.getMoney) { showToast('Trade failed — not enough money'); return; }
+  const ownedBy = (idx, pl) => { const p = gameState.properties[idx]; return p && p.ownerId === pl.id && !p.hasHotel && (p.houses||0)===0; };
+  if (!trade.giveProps.every(i => ownedBy(i, from)) || !trade.getProps.every(i => ownedBy(i, to))) { showToast('Trade failed — property changed'); return; }
+  const move = (idx, a, b) => {
+    a.properties = a.properties.filter(x => x !== idx);
+    if (!b.properties.includes(idx)) b.properties.push(idx);
+    gameState.properties[idx].ownerId = b.id;
+  };
+  trade.giveProps.forEach(i => move(i, from, to));
+  trade.getProps.forEach(i => move(i, to, from));
+  from.money += trade.getMoney - trade.giveMoney;
+  to.money += trade.giveMoney - trade.getMoney;
+  sfx('trade');
+  logEvent(`<span class="event">→ ${escapeHTML(from.name)} and ${escapeHTML(to.name)} completed a trade 🤝</span>`);
 }
 
 /* ============================================================ */
@@ -2782,6 +3348,7 @@ function endGame(){
     </div>
   `).join('');
   renderConfetti();
+  sfx('win');
   showScreen('screen-win');
   broadcastState();
   saveState();
@@ -3301,6 +3868,26 @@ function bind(){
 
   $('btn-rules').onclick = () => { showScreen('screen-rules'); document.querySelector('.rules-body').scrollTop = 0; };
   $('btn-rules-back').onclick = () => showScreen('screen-start');
+
+  /* In-game rules: reuse the same content in a modal over the board. */
+  $('btn-rules-ingame').onclick = () => {
+    const src = document.querySelector('#screen-rules .rules-body');
+    const body = $('rules-modal-body');
+    if (src && !body.dataset.filled) { body.innerHTML = src.innerHTML; body.dataset.filled = '1'; }
+    body.scrollTop = 0;
+    showModal('modal-rules');
+  };
+  $('btn-rules-modal-close').onclick = () => closeModal('modal-rules');
+  $('modal-rules').addEventListener('click', (e) => { if (e.target.id === 'modal-rules') closeModal('modal-rules'); });
+
+  $('btn-sound').onclick = () => Sound.toggle();
+  updateSoundButton();
+
+  /* Trade */
+  $('btn-trade-cancel').onclick = () => closeModal('modal-trade');
+  $('btn-trade-propose').onclick = () => proposeTrade();
+  $('btn-trade-accept').onclick = () => { closeModal('modal-trade-review'); requestAction({ type: 'RESPOND_TRADE', accept: true }); };
+  $('btn-trade-decline').onclick = () => { closeModal('modal-trade-review'); requestAction({ type: 'RESPOND_TRADE', accept: false }); };
 
   $('btn-pap-back').onclick = () => showScreen('screen-start');
   $('btn-host-back').onclick = () => {
