@@ -287,6 +287,28 @@
   .trade-summary .get { color: var(--nas-teal); font-weight: 700; }
   .trade-empty { text-align: center; color: var(--nas-navy); opacity: 0.6; font-size: 13px; padding: 10px; }
 
+  /* Setup option toggle switch */
+  .option-toggle {
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    background: var(--warm-white); border: 2px solid var(--nas-navy);
+    border-radius: 14px; padding: 12px 16px; margin-top: 14px;
+    box-shadow: 0 4px 0 var(--nas-navy);
+  }
+  .option-toggle input { display: none; }
+  .toggle-track {
+    flex: 0 0 auto; width: 46px; height: 26px; border-radius: 999px;
+    background: #c4c9c4; position: relative; transition: background 0.18s ease;
+  }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+    border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    transition: transform 0.18s ease;
+  }
+  .option-toggle input:checked + .toggle-track { background: var(--nas-teal); }
+  .option-toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(20px); }
+  .toggle-label { font-size: 14px; font-weight: 600; color: var(--nas-navy); text-align: left; line-height: 1.3; }
+  .toggle-label small { font-weight: 500; opacity: 0.6; font-size: 11.5px; }
+
   .player-card {
     background: var(--warm-white);
     border: 2px solid var(--nas-navy);
@@ -1303,6 +1325,11 @@
       <button class="btn small outline" id="btn-add-player">+ ADD PLAYER</button>
       <button class="btn small danger" id="btn-remove-player">– REMOVE</button>
     </div>
+    <label class="option-toggle" id="opt-auctions">
+      <input type="checkbox" id="chk-auctions" checked>
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-label">Auction properties nobody buys<br><small>Turn off for a simpler game with younger players</small></span>
+    </label>
     <div class="setup-actions" style="margin-top:18px;">
       <button class="btn outline small" id="btn-pap-back">← BACK</button>
       <button class="btn" id="btn-pap-start">START GAME →</button>
@@ -1742,6 +1769,7 @@ function freshGameState(mode){
     toddleDeck: shuffleDeck(TODDLE_CARDS.map(c => c.id)),
     pendingTrade: null,
     auction: null,
+    auctionsEnabled: (localStorage.getItem('nas_auctions') !== '0'),
     log: []
   };
 }
@@ -2707,8 +2735,13 @@ function doBuyProperty(tileIdx){
 
 function doSkipProperty(){
   closeModal('modal-property');
-  /* Declined to buy → the space goes to auction (official Monopoly rule). */
-  startAuction(currentPlayer().tileIndex);
+  /* Declined to buy → the space goes to auction (official rule), unless
+     auctions are turned off, in which case it simply stays unowned. */
+  if (gameState.auctionsEnabled) {
+    startAuction(currentPlayer().tileIndex);
+  } else {
+    pendingLanding = false;
+  }
 }
 
 /* ============================================================ */
@@ -3850,6 +3883,7 @@ function bind(){
 
   $('btn-pap').onclick = () => {
     showScreen('screen-pap-setup');
+    if ($('chk-auctions')) $('chk-auctions').checked = (localStorage.getItem('nas_auctions') !== '0');
     renderPapSetup();
   };
   $('btn-host').onclick = () => {
@@ -3882,6 +3916,13 @@ function bind(){
 
   $('btn-sound').onclick = () => Sound.toggle();
   updateSoundButton();
+
+  /* Auctions on/off setting (persisted) */
+  const chkAuctions = $('chk-auctions');
+  if (chkAuctions) {
+    chkAuctions.checked = (localStorage.getItem('nas_auctions') !== '0');
+    chkAuctions.onchange = () => localStorage.setItem('nas_auctions', chkAuctions.checked ? '1' : '0');
+  }
 
   /* Trade */
   $('btn-trade-cancel').onclick = () => closeModal('modal-trade');
