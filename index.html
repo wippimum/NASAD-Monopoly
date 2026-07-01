@@ -230,10 +230,17 @@
     font-size: clamp(14px, 2vw, 18px);
     margin: 0 0 8px;
   }
-  .rule-block p { color: var(--nas-navy); font-size: 14px; line-height: 1.5; margin: 0; }
-  .rule-block ul { margin: 0; padding-left: 20px; }
-  .rule-block li { color: var(--nas-navy); font-size: 14px; line-height: 1.5; margin-bottom: 5px; }
+  .rule-block p { color: var(--nas-navy); font-size: 14.5px; line-height: 1.55; margin: 0 0 6px; }
+  .rule-block p:last-child { margin-bottom: 0; }
+  .rule-block ul, .rule-block ol { margin: 0; padding-left: 22px; }
+  .rule-block li { color: var(--nas-navy); font-size: 14.5px; line-height: 1.55; margin-bottom: 6px; }
+  .rule-block ol li { padding-left: 3px; }
   .rule-block strong { color: var(--nas-navy); font-weight: 700; }
+  .rule-block .kidnote { display: block; margin-top: 6px; font-size: 12.5px; opacity: 0.7; font-style: italic; }
+  /* Highlighted quick-start block */
+  .rule-block.qs { background: rgba(43,182,176,0.12); border-color: var(--nas-teal); }
+  .rule-block.qs h3 { color: var(--nas-navy); }
+  .rule-block.qs ol { font-weight: 500; }
 
   /* In-game rules modal + small header icon button */
   .btn.icon-btn { padding: 8px 10px; }
@@ -1277,83 +1284,103 @@
 <div id="screen-rules" class="screen">
   <div class="rules-shell">
     <h2>How to Play</h2>
-    <p class="sub">NAS Abu Dhabi Edition — a school-themed Monopoly for 2–6 players.</p>
+    <p class="sub">A fun school board game for 2–6 players. New? Just read the Quick Start! ⭐</p>
 
     <div class="rules-body">
-      <section class="rule-block">
-        <h3>🎯 The Goal</h3>
-        <p>Be the last player left with money! Travel around the school, buy your favourite spots, charge rent when friends land on them, and try not to go bankrupt. When only one player still has money, that player wins.</p>
+      <section class="rule-block qs">
+        <h3>⭐ Quick Start (read this first!)</h3>
+        <ol>
+          <li>On your turn, tap <strong>🎲 Roll Dice</strong>. Your piece moves.</li>
+          <li>Land on an <strong>empty place</strong>? Tap <strong>Buy</strong> if you want it.</li>
+          <li>Land on a <strong>friend’s place</strong>? You pay them a little <strong>rent</strong>.</li>
+          <li>Tap <strong>End Turn</strong> to pass the game to the next player.</li>
+        </ol>
+        <p><strong>The last player who still has money wins! 🎉</strong> Everything below is extra.</p>
       </section>
 
       <section class="rule-block">
-        <h3>🧑‍🤝‍🧑 Setup</h3>
+        <h3>🎯 The Big Idea</h3>
+        <p>Move around the school, buy your favourite places, and collect ⭐ when friends land on them. Try not to run out of money! Everyone starts with <strong>1,500 ⭐</strong>.</p>
+      </section>
+
+      <section class="rule-block">
+        <h3>🎲 Your Turn, Step by Step</h3>
+        <ol>
+          <li>Tap <strong>🎲 Roll Dice</strong> — your piece hops that many spaces.</li>
+          <li>Do what your space says (buy it, pay rent, or pick up a card).</li>
+          <li>Tap <strong>End Turn</strong> for the next player’s go.</li>
+        </ol>
+        <p>✨ Both dice show the <strong>same number</strong> (doubles)? Roll again!<br>
+        😬 Get doubles <strong>3 times in a row</strong> → straight to the Principal’s Office.<br>
+        🏫 Every time you go past <strong>GO</strong>, collect <strong>200 ⭐</strong>.</p>
+      </section>
+
+      <section class="rule-block">
+        <h3>🏫 Buying a Place</h3>
         <ul>
-          <li>Add <strong>2 to 6 players</strong>. Each picks a name and a token.</li>
-          <li>Everyone starts with <strong>1,500 ⭐</strong>.</li>
-          <li>All players begin on <strong>GO</strong> and take turns.</li>
+          <li>Land on an <strong>empty</strong> place → tap <strong>Buy</strong> to own it (it costs the price on the tile).</li>
+          <li>Now when friends land there, they <strong>pay you rent</strong>. 💰</li>
+          <li>Don’t want it? Tap <strong>Skip</strong>.</li>
         </ul>
       </section>
 
       <section class="rule-block">
-        <h3>🎲 Your Turn</h3>
+        <h3>💰 Earn More Rent</h3>
         <ul>
-          <li>Tap <strong>Roll Dice</strong> and your token moves that many tiles around the board.</li>
-          <li>Roll <strong>doubles</strong> (both dice the same) and you get to roll again!</li>
-          <li>But roll doubles <strong>three times in a row</strong> and you’re sent straight to the Principal’s Office. 😬</li>
-          <li>Each time you pass or land on <strong>GO</strong>, collect <strong>200 ⭐</strong>.</li>
+          <li>Own <strong>all the places of one colour</strong> = a <strong>full set</strong>. Now friends pay you <strong>double</strong> rent!</li>
+          <li>Tap one of your places → <strong>Build House</strong> 🏠 to charge even more. Four houses can become a <strong>Hotel</strong> 🏨 — the biggest rent of all!</li>
+          <li>Tip: put <strong>one house on each</strong> place before adding a second.</li>
         </ul>
       </section>
 
       <section class="rule-block">
-        <h3>🏫 Buying Property</h3>
+        <h3>🚪 Gates &amp; Water</h3>
         <ul>
-          <li>Land on an unowned space (a classroom, library, gym, gate, etc.) and you may <strong>buy it</strong> for the price shown on the tile.</li>
-          <li>If you don’t buy it, it simply stays unowned.</li>
-          <li>Own a space and other players must <strong>pay you rent</strong> when they land on it.</li>
-        </ul>
-      </section>
-
-      <section class="rule-block">
-        <h3>💰 Rent &amp; Building</h3>
-        <ul>
-          <li>Collect <strong>every space of one colour zone</strong> to get a <strong>monopoly</strong> — rent doubles!</li>
-          <li>With a monopoly you can <strong>build houses</strong> 🏠 (and then a <strong>hotel</strong> 🏨) on those spaces to charge much higher rent.</li>
-          <li>You must build <strong>evenly</strong> across the zone — one house on each space before adding a second.</li>
-          <li>More houses = more rent: 1 → 2 → 3 → 4 houses, then a hotel charges the most.</li>
-        </ul>
-      </section>
-
-      <section class="rule-block">
-        <h3>🚪 Gates &amp; Utilities</h3>
-        <ul>
-          <li><strong>Gates (stations):</strong> rent depends on how many gates you own — 1 gate = 25 ⭐, 2 = 50 ⭐, 3 = 100 ⭐, 4 = 200 ⭐.</li>
-          <li><strong>Reception &amp; Water Station (utilities):</strong> rent is your dice roll × 4. Own <strong>both</strong> and it’s dice × 10.</li>
+          <li><strong>Gates</strong> 🚪: the more gates you own, the more rent — <strong>25 → 50 → 100 → 200 ⭐</strong>.</li>
+          <li><strong>Reception &amp; Water Station</strong> 💧: rent is your <strong>dice number × 4</strong> (× 10 if you own both).</li>
         </ul>
       </section>
 
       <section class="rule-block">
         <h3>🎁 Chance &amp; 📱 Toddle Cards</h3>
         <ul>
-          <li>Land on a <strong>Chance</strong> space to draw a card — usually a happy surprise that gives you ⭐.</li>
-          <li>Land on a <strong>Toddle Card</strong> space and you might have to pay a small fine (forgot your PE kit again!).</li>
-          <li>Do exactly what the card says.</li>
+          <li>Land on <strong>Chance</strong> 🎁 → a happy surprise (usually you get ⭐!).</li>
+          <li>Land on <strong>Toddle</strong> 📱 → a little “oops” (you might pay a small fine).</li>
+          <li>Just do what the card says. 😊</li>
         </ul>
       </section>
 
       <section class="rule-block">
-        <h3>🎓 Special Corners</h3>
+        <h3>🎓 Corner Spaces</h3>
         <ul>
-          <li><strong>GO</strong> — collect 200 ⭐ each time around.</li>
-          <li><strong>Principal’s Office (jail)</strong> — when you’re sent here you’re stuck. Pay <strong>50 ⭐</strong> to leave, or roll doubles to escape (up to 3 turns).</li>
-          <li><strong>Go to Principal</strong> — land here and you’re sent straight to the Principal’s Office.</li>
-          <li><strong>Break Time</strong> — a free rest! Nothing happens. 😌</li>
-          <li><strong>School Fees</strong> — pay 200 ⭐ when you land here.</li>
+          <li><strong>GO</strong> 🏫 — collect <strong>200 ⭐</strong> each lap.</li>
+          <li><strong>Principal’s Office</strong> 🎓 — sent here? You’re stuck. Pay <strong>50 ⭐</strong> or roll doubles to get out.</li>
+          <li><strong>Go to Principal</strong> ⚠️ — sends you straight to the office.</li>
+          <li><strong>Break Time</strong> 🎪 — a free rest, nothing happens. 😌</li>
+          <li><strong>School Fees</strong> 💰 — pay <strong>200 ⭐</strong>.</li>
         </ul>
+      </section>
+
+      <section class="rule-block">
+        <h3>🤝 Swap with Friends (Trading)</h3>
+        <p>On your turn, tap <strong>🤝 Propose a Trade</strong>. Pick a friend and offer to swap places and/or ⭐. They tap <strong>yes</strong> or <strong>no</strong>. It’s a great way to finish a colour set!</p>
+      </section>
+
+      <section class="rule-block">
+        <h3>🆘 Running Low on Money?</h3>
+        <p>Tap one of your places to <strong>sell houses</strong> or <strong>mortgage</strong> it (borrow ⭐ using it). This helps you keep playing a bit longer.
+        <span class="kidnote">Grown-up helper: this is the trickiest part — a parent can help younger players here.</span></p>
+      </section>
+
+      <section class="rule-block">
+        <h3>🔨 Auctions</h3>
+        <p>If someone skips buying a place, <strong>everyone can bid ⭐ for it</strong> — the highest bid wins it! (Grown-ups can turn auctions <strong>off</strong> at the start for a simpler game with little ones.)</p>
       </section>
 
       <section class="rule-block">
         <h3>🏆 Winning</h3>
-        <p>If you can’t afford to pay what you owe, you go <strong>bankrupt</strong> and leave the game. The <strong>last player still in the game wins!</strong> You can also tap <strong>End Game</strong> at any time to rank everyone by total worth (cash + property + buildings).</p>
+        <p>Can’t pay what you owe? You’re <strong>out</strong> of the game. The <strong>last player with money wins!</strong> 🎉<br>
+        In a hurry? Tap <strong>End Game</strong> any time to see who’s the richest right now.</p>
       </section>
     </div>
 
