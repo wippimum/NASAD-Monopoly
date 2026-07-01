@@ -119,6 +119,12 @@
     margin-bottom: 36px;
   }
   .start-buttons { display: flex; flex-direction: column; gap: 14px; width: min(360px, 92vw); }
+  .start-footer { margin-top: 30px; width: min(420px, 92vw); text-align: center; }
+  .start-disclaimer {
+    margin-top: 10px; font-size: 11.5px; line-height: 1.5;
+    color: var(--nas-navy); opacity: 0.55;
+    font-family: 'Fredoka', sans-serif;
+  }
 
   .btn {
     padding: 16px 24px;
@@ -179,7 +185,7 @@
     font-size: 15px;
   }
   /* --- RULES / HOW TO PLAY --- */
-  #screen-rules.active { display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
+  #screen-rules.active, #screen-about.active { display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
   .rules-shell {
     max-width: 760px;
     width: 100%;
@@ -1218,6 +1224,50 @@
     <button class="btn outline" id="btn-join">🔗 JOIN A GAME</button>
     <button class="btn gold hidden" id="btn-continue">⏵ CONTINUE GAME</button>
     <button class="start-link" id="btn-rules">📖 How to play — Rules</button>
+  </div>
+  <div class="start-footer">
+    <button class="start-link" id="btn-about">About · Privacy</button>
+    <p class="start-disclaimer">A student-made project · not officially affiliated with, or endorsed by, Nord Anglia International School · a free, non-commercial fan game</p>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- ABOUT / PRIVACY                                               -->
+<!-- ============================================================= -->
+<div id="screen-about" class="screen">
+  <div class="rules-shell">
+    <h2>About &amp; Privacy</h2>
+    <p class="sub">NAS Abu Dhabi Monopoly — a student-made school board game.</p>
+    <div class="rules-body">
+      <section class="rule-block">
+        <h3>🎲 About this game</h3>
+        <p>NAS Abu Dhabi Monopoly is a fun, school-themed version of the classic property-trading board game. Travel around the school, buy your favourite spots, and try not to go bankrupt! You can play <strong>pass-and-play</strong> on a single device, or <strong>online</strong> with friends on their own devices.</p>
+      </section>
+      <section class="rule-block">
+        <h3>🧑‍🎨 Made by</h3>
+        <p>Designed by <strong>Alya, Leyna, Sultan and Hamdan Al Falasi</strong> — created for fun and learning.</p>
+      </section>
+      <section class="rule-block">
+        <h3>🔒 Privacy</h3>
+        <ul>
+          <li>This game does <strong>not collect any personal information</strong>.</li>
+          <li>There are <strong>no accounts, no sign-ups, no ads, and no tracking</strong>.</li>
+          <li>Your game progress and settings are saved <strong>only on your own device</strong> (in your browser) — not on any server.</li>
+          <li>Online play connects devices <strong>directly (peer-to-peer)</strong>; game moves are shared between players and are not stored by us.</li>
+        </ul>
+      </section>
+      <section class="rule-block">
+        <h3>✉️ Contact &amp; feedback</h3>
+        <p>This is a student project made just for fun — no account needed to play. It isn’t a commercial product, so there’s no support desk; if you spotted it through the school community, that’s the best place to share feedback.</p>
+      </section>
+      <section class="rule-block">
+        <h3>ℹ️ A note</h3>
+        <p>This is a <strong>student-made project</strong> and is <strong>not officially affiliated with, endorsed by, or sponsored by</strong> Nord Anglia International School. “Monopoly” is a trademark of its respective owner; this is a free, non-commercial fan project made for learning.</p>
+      </section>
+    </div>
+    <div class="setup-actions" style="margin-top:8px;">
+      <button class="btn" id="btn-about-back">← Main Menu</button>
+    </div>
   </div>
 </div>
 
@@ -3900,8 +3950,10 @@ function bind(){
     if (params.get('join')) $('join-code-input').value = params.get('join').toUpperCase();
   };
 
-  $('btn-rules').onclick = () => { showScreen('screen-rules'); document.querySelector('.rules-body').scrollTop = 0; };
+  $('btn-rules').onclick = () => { showScreen('screen-rules'); document.querySelector('#screen-rules .rules-body').scrollTop = 0; };
   $('btn-rules-back').onclick = () => showScreen('screen-start');
+  $('btn-about').onclick = () => { showScreen('screen-about'); document.querySelector('#screen-about .rules-body').scrollTop = 0; };
+  $('btn-about-back').onclick = () => showScreen('screen-start');
 
   /* In-game rules: reuse the same content in a modal over the board. */
   $('btn-rules-ingame').onclick = () => {
